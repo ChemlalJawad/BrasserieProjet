@@ -1,7 +1,9 @@
 ﻿using BP.Core.Domaine;
 using BP.Data.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BP.Data.Repositories
@@ -13,6 +15,17 @@ namespace BP.Data.Repositories
         public WholesalerRepository(BrasserieContext brasserieContext)
         {
             _brasserieContext = brasserieContext;
+        }
+
+        public Wholesaler Find(int Id)
+        {
+          var wholesaler =  _brasserieContext.Wholesalers
+                .Include(e => e.WholesalerBeers)
+                .ThenInclude(e => e.Beer)
+                .SingleOrDefault(e => e.Id == Id);
+
+            if (wholesaler == null) throw new Exception("wholesaler null");
+           return wholesaler;
         }
 
         public void SellNewBeer(WholesalerBeer wholesalerBeer)

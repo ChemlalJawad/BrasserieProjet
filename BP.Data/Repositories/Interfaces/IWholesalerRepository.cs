@@ -9,5 +9,8 @@ namespace BP.Data.Repositories.Interfaces
     {
         void SellNewBeer(WholesalerBeer wholesalerBeer);
         void UpdateStock(WholesalerBeer wholesalerBeer);
+
+        Wholesaler Find(int Id);
+       
     }
 }

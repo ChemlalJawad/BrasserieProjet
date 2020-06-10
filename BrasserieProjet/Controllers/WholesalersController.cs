@@ -9,6 +9,7 @@ using BP.Core.Domaine;
 using BP.Data;
 using BP.Service.Wholesalers.Services.Interfaces;
 using BP.Service.Wholesalers;
+using BP.Service.Wholesalers.Services;
 
 namespace BrasserieProjet.Controllers
 {
@@ -32,12 +33,23 @@ namespace BrasserieProjet.Controllers
            return Ok();
         }
         [HttpPost]
-        [Route("wholesaler/updateStock")]
-        public ActionResult<WholesalerBeer> UpdateStock(SellNewBeerCommand command)
+        [Route("wholesaler/updateStock/{stock}")]
+        public ActionResult<WholesalerBeer> UpdateStock(SellNewBeerCommand command, [FromRoute] int stock)
         {
+            command.Stock = stock;
             _wholesalerService.UpdateStock(command);
 
             return Ok();
+        }
+        //TODO A finir 
+        [HttpPost]
+        [Route("wholesaler/{wholesalerId}/getquotation")]
+        public ActionResult<Quotation> GetQuotation([FromBody] GetQuotationCommand command, [FromRoute] int id)
+        {
+            
+            var quotation = _wholesalerService.GetQuotation(id,command);
+
+            return Ok(quotation);
         }
 
     }
