@@ -16,17 +16,6 @@ namespace BP.Service.Brewers.Services
             _brewerRepository = brewerRepository;
         }
 
-       /* public Brewer CreateBrewer(CreateBrewerCommand command)
-        {
-            var brewerResult = new Brewer()
-            {
-                Name = command.Name
-            };
-            _brewerRepository.Create(brewerResult);
-            return brewerResult;
-            
-        }*/
-
         public Brewer FindBrewer(int Id)
         {
             var brewer = _brewerRepository.FindById(Id);

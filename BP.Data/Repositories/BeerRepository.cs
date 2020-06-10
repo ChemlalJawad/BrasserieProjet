@@ -42,7 +42,7 @@ namespace BP.Data.Repositories
                 .Include(b => b.Brewer)
                 .FirstOrDefault(e => e.Id == beerId);
           
-          
+           
             return beerResult;
         }
 
