@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +9,6 @@ namespace BP.Data.Repositories.Interfaces
     {
         IEnumerable<Brewer> GetAllBeers();
      
-        Brewer FindById(int Id);
+        Brewer FindBrewerById(int Id);
     }
 }

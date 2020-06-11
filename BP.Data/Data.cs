@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace BP.Data
                 Id = 1,
                 Name = "Leffe Blonde",
                 Price = 2.2,
-                AlcoolPercentage = 6.6,
+                AlcoholPercentage = 6.6,
                 BrewerId = 1
             },
             new
@@ -29,7 +29,7 @@ namespace BP.Data
                 Id = 2,
                 Name = "Leffe Brune",
                 Price = 2.8,
-                AlcoolPercentage = 8.6,
+                AlcoholPercentage = 8.6,
                 BrewerId = 1
             });
 
@@ -44,7 +44,7 @@ namespace BP.Data
                 Id = 3,
                 Name = "Chouffe",
                 Price = 3.1,
-                AlcoolPercentage = 7.5,
+                AlcoholPercentage = 7.5,
                 BrewerId = 2
             });
 
@@ -59,14 +59,14 @@ namespace BP.Data
                 Id = 4,
                 Name = "Chimay Bleue",
                 Price = 3.0,
-                AlcoolPercentage = 8.8,
+                AlcoholPercentage = 8.8,
                 BrewerId = 3
             }, new
             {
                 Id = 5,
                 Name = "Chimay Brune",
                 Price = 2.8,
-                AlcoolPercentage = 7.9,
+                AlcoholPercentage = 7.9,
                 BrewerId = 3
             });
 

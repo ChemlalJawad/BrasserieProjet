@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using BP.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,15 +17,14 @@ namespace BP.Data.Repositories
             _brasserieContext = brasserieContext;
         }
 
-        public Wholesaler Find(int Id)
+        public Wholesaler FindWholesalerById(int Id)
         {
-          var wholesaler =  _brasserieContext.Wholesalers
+            var wholesaler =  _brasserieContext.Wholesalers
                 .Include(e => e.WholesalerBeers)
-                .ThenInclude(e => e.Beer)
-                .SingleOrDefault(e => e.Id == Id);
-
-            if (wholesaler == null) throw new Exception("wholesaler null");
-           return wholesaler;
+                 .ThenInclude(e => e.Beer)
+                    .SingleOrDefault(e => e.Id == Id);
+         
+            return wholesaler;
         }
 
         public void SellNewBeer(WholesalerBeer wholesalerBeer)

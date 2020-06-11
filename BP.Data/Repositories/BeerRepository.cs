@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using BP.Data.Repositories.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +21,8 @@ namespace BP.Data.Repositories
 
         public IEnumerable<Beer> GetAll()
         {
-            var beers = _brasserieContext
-                .Beers.
-                ToList();
-                
-            
+            var beers = _brasserieContext.Beers.ToList();
+
             return beers;
         }
 
@@ -33,23 +30,21 @@ namespace BP.Data.Repositories
         {
             _brasserieContext.Beers.Add(beer);
             _brasserieContext.SaveChanges();
-
         }
 
-        public Beer FindById(int beerId)
+        public Beer FindBeerById(int beerId)
         {
             var beerResult = _brasserieContext.Beers
                 .Include(b => b.Brewer)
-                .FirstOrDefault(e => e.Id == beerId);
-          
-           
+                    .FirstOrDefault(e => e.Id == beerId);
+
             return beerResult;
         }
 
         public void Delete(int beerId)
         {
             _brasserieContext.Beers.Remove(new Beer() { Id = beerId });
-             _brasserieContext.SaveChanges();
+            _brasserieContext.SaveChanges();
         }
     }
 }

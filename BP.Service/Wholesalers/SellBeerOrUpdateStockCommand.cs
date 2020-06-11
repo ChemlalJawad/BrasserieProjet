@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BP.Service.Wholesalers
 {
-    public class SellNewBeerCommand
+    public class SellBeerOrUpdateStockCommand
     {
         public int BeerId { get; set; }
         public int WholesalerId { get; set; }
