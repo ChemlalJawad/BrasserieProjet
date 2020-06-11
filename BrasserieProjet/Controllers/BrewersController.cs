@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BP.Core.Domaine;
-using BP.Data;
+using BP.Core.Domains;
 using BP.Service.Brewers.Services.Interfaces;
 
 namespace BrasserieProjet.Controllers
@@ -15,27 +9,28 @@ namespace BrasserieProjet.Controllers
     [ApiController]
     public class BrewersController : ControllerBase
     {
-        private readonly IBrewerService _context;
+        private readonly IBrewerService _brewerService;
 
-        public BrewersController(IBrewerService context)
+        public BrewersController(IBrewerService brewerService)
         {
-            _context = context;
+            _brewerService = brewerService;
         }
 
         [HttpGet]
         [Route("brewers")]
         public ActionResult<IEnumerable<Brewer>> GetBeers()
         {
-            var brewers = _context.GetAllBeers();
+            var brewers = _brewerService.GetAllBeers();
+          
             return Ok(brewers);
         }
-
-        // GET: api/beer/1
+                
         [HttpGet]
-        [Route("brewer/{id}")]
+        [Route("brewers/{id}")]
         public ActionResult<Beer> FindBeer([FromRoute] int Id)
         {
-            var brewer = _context.FindBrewer(Id);
+            var brewer = _brewerService.FindBrewerById(Id);
+           
             return Ok(brewer);
         }
 

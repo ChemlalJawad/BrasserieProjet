@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using BP.Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,8 +18,7 @@ namespace BP.Data.Repositories
             _brasserieContext = brasserieContext;
         }
 
-
-        public Brewer FindById(int Id)
+        public Brewer FindBrewerById(int Id)
         {
             var brewer = _brasserieContext.Brewers
                 .Include(e => e.Beers)
@@ -37,8 +36,7 @@ namespace BP.Data.Repositories
                     .ThenInclude( e=> e.Wholesaler)
                     .ToList();
 
-                return beers;
-           
+           return beers;
         }
     }
 }

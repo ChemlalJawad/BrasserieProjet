@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,6 @@ namespace BP.Data
                 .WithMany(e => e.WholesalerBeers)
                 .HasForeignKey(e => e.WholesalerId);
 
-       
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             modelBuilder.Seed();
         }

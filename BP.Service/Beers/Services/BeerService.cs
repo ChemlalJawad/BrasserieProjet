@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using BP.Data.Repositories.Interfaces;
 using BP.Service.Beers.Services.Interfaces;
 using System;
@@ -21,13 +21,13 @@ namespace BP.Service.Beers.Services
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
-            var brewer = _brewerRepository.FindById(command.BrewerId);
+            var brewer = _brewerRepository.FindBrewerById(command.BrewerId);
             if (brewer == null) return null;
 
             var beer = new Beer
             {
                 Name = command.Name,
-                AlcoolPercentage = command.AlcoolPercentage,
+                AlcoholPercentage = command.AlcoholPercentage,
                 Price = command.Price,
                 Brewer = brewer
             };
@@ -43,7 +43,7 @@ namespace BP.Service.Beers.Services
 
         public Beer FindById(int Id)
         {
-            return _beerRepository.FindById(Id);
+            return _beerRepository.FindBeerById(Id);
         }
 
         public IEnumerable<Beer> GetAll()

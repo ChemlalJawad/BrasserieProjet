@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using BP.Data.Repositories.Interfaces;
 using BP.Service.Brewers.Services.Interfaces;
 using System;
@@ -16,9 +16,9 @@ namespace BP.Service.Brewers.Services
             _brewerRepository = brewerRepository;
         }
 
-        public Brewer FindBrewer(int Id)
+        public Brewer FindBrewerById(int Id)
         {
-            var brewer = _brewerRepository.FindById(Id);
+            var brewer = _brewerRepository.FindBrewerById(Id);
             return brewer;
         }
 

@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using System;
 using System.Collections.Generic;
 using System.Text;

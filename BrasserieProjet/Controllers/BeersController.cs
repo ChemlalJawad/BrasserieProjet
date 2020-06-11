@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BP.Core.Domaine;
-using BP.Data;
+using BP.Core.Domains;
 using BP.Service.Beers.Services.Interfaces;
 using BP.Service;
 
@@ -23,27 +17,26 @@ namespace BrasserieProjet.Controllers
             _beerService = beerService;
         }
 
-        // GET: api/beers
         [HttpGet]
         [Route("beers")]
         public ActionResult<IEnumerable<Beer>> GetBeers()
         {
             var beers = _beerService.GetAll();
+            
             return Ok(beers);
         }
         
-        // GET: api/beer/1
         [HttpGet]
-        [Route("beer/{id}")]
-        public ActionResult<Beer> FindBeer([FromRoute] int Id)
+        [Route("beers/{id}")]
+        public ActionResult<Beer> FindBeerById([FromRoute] int Id)
         {
             var beer = _beerService.FindById(Id);
+           
             return Ok(beer);
         }
 
-        // GET: api/beer/5
         [HttpPost]
-        [Route("beer")]
+        [Route("beers")]
         public ActionResult<Beer> CreateBeer(CreateBeerCommand command)
         {
             var beer = _beerService.CreateBeer(command);
@@ -52,13 +45,12 @@ namespace BrasserieProjet.Controllers
         }
 
         [HttpDelete]
-        [Route("beer/{id}")]
+        [Route("beers/{id}")]
         public ActionResult<Beer> Delete([FromRoute] int Id)
         {
             _beerService.Delete(Id);
+           
             return Ok();
-
-
         }
     }
 }

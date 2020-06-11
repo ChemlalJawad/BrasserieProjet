@@ -1,4 +1,4 @@
-﻿using BP.Core.Domaine;
+﻿using BP.Core.Domains;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +10,7 @@ namespace BP.Data.Repositories.Interfaces
         //Pour moi check si j'ai tout
         IEnumerable<Beer> GetAll();
         void CreateBeer(Beer beer);
-        Beer FindById(int beerId);
+        Beer FindBeerById(int beerId);
         void Delete(int beerId);
     }
 }
