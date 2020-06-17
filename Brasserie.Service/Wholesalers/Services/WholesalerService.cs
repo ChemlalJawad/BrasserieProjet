@@ -19,12 +19,12 @@ namespace Brasserie.Service.Wholesalers.Services
 
         public double GetQuotation(QuotationCommand command)
         {
-            if (command.Items == null) throw new Exception("Command quand be null !");
+            if (command.Items == null) throw new Exception("Command can' be null !");
                         
             var wholesaler = _wholesalerRepository.FindById(command.WholesalerId);
-            if (wholesaler == null) throw new System.Exception("Wholesaler does not exist!");
+            if (wholesaler == null) throw new Exception("Wholesaler does not exist!");
 
-           if(command.Items.GroupBy(e => e.BeerId)
+            if(command.Items.GroupBy(e => e.BeerId)
                 .Select( x => x.First())
                 .ToList()
                 .Count()  < command.Items.Count())

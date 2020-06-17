@@ -26,7 +26,7 @@ namespace Brasserie.Web.Controllers
         {
             _wholesalerService.SellNewBeer(command);
 
-           return Ok();
+            return Ok();
         }
 
         [HttpPost]
@@ -40,14 +40,12 @@ namespace Brasserie.Web.Controllers
         }
 
         [HttpPost]
-        [Route("{wholesalerId}/quote")]
+        [Route("{wholesalerId}/quotation")]
         public ActionResult<QuotationCommand> GetQuotations(QuotationCommand command)
         {
-           
             var price = _wholesalerService.GetQuotation(command);
             command.TotalPrice = price;
-            
-
+           
             return Ok(command);
         }
 
