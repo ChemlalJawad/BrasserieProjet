@@ -7,6 +7,6 @@ namespace Brasserie.Data.Repositories.Interfaces
     {
         IEnumerable<Brewer> GetAllBeers();
      
-        Brewer FindBrewerById(int Id);
+        Brewer FindById(int Id);
     }
 }

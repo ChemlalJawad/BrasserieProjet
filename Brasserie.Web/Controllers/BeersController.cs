@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Brasserie.Web.Controllers
 {
-    [Route("api")]
+    [Route("api/beers")]
     [ApiController]
     public class BeersController : ControllerBase
     {
@@ -18,7 +18,6 @@ namespace Brasserie.Web.Controllers
         }
 
         [HttpGet]
-        [Route("beers")]
         public ActionResult<IEnumerable<Beer>> GetBeers()
         {
             var beers = _beerService.GetAll();
@@ -27,7 +26,7 @@ namespace Brasserie.Web.Controllers
         }
         
         [HttpGet]
-        [Route("beers/{id}")]
+        [Route("{id}")]
         public ActionResult<Beer> FindBeerById([FromRoute] int Id)
         {
             var beer = _beerService.FindById(Id);
@@ -36,7 +35,6 @@ namespace Brasserie.Web.Controllers
         }
 
         [HttpPost]
-        [Route("beers")]
         public ActionResult<Beer> CreateBeer(CreateBeerCommand command)
         {
             var beer = _beerService.CreateBeer(command);
@@ -45,7 +43,7 @@ namespace Brasserie.Web.Controllers
         }
 
         [HttpDelete]
-        [Route("beers/{id}")]
+        [Route("{id}")]
         public ActionResult<Beer> Delete([FromRoute] int Id)
         {
             _beerService.Delete(Id);

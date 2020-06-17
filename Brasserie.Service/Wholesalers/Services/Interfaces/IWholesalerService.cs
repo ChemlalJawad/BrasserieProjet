@@ -1,8 +1,11 @@
-﻿namespace Brasserie.Service.Wholesalers.Services.Interfaces
+﻿using System;
+
+namespace Brasserie.Service.Wholesalers.Services.Interfaces
 {
    public interface IWholesalerService
     {
-        void SellNewBeer(SellBeerOrUpdateStockCommand command);
-        void UpdateStock(SellBeerOrUpdateStockCommand command);
+        void SellNewBeer(SellBeerCommand command);
+        void UpdateStock(UpdateStockCommand command);
+        double GetQuotation(QuotationCommand command);
     }
 }

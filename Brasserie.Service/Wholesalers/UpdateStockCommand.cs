@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BP.Service.Wholesalers.Services
+﻿namespace Brasserie.Service.Wholesalers
 {
     public class UpdateStockCommand
     {

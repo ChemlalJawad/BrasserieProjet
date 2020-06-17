@@ -6,7 +6,7 @@ namespace Brasserie.Data.Repositories.Interfaces
     {
         void SellNewBeer(WholesalerBeer wholesalerBeer);
         void UpdateStock(WholesalerBeer wholesalerBeer);
-        Wholesaler FindWholesalerById(int Id);
+        Wholesaler FindById(int Id);
        
     }
 }

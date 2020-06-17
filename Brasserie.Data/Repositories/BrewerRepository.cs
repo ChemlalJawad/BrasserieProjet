@@ -15,7 +15,7 @@ namespace Brasserie.Data.Repositories
             _brasserieContext = brasserieContext;
         }
 
-        public Brewer FindBrewerById(int Id)
+        public Brewer FindById(int Id)
         {
             var brewer = _brasserieContext.Brewers
                 .Include(e => e.Beers)
@@ -27,13 +27,13 @@ namespace Brasserie.Data.Repositories
 
         public IEnumerable<Brewer> GetAllBeers()
         {
-           var beers = _brasserieContext.Brewers
+            var beers = _brasserieContext.Brewers
                     .Include(e => e.Beers)
                     .ThenInclude(e => e.WholesalerBeers)
                     .ThenInclude( e=> e.Wholesaler)
                     .ToList();
 
-           return beers;
+            return beers;
         }
     }
 }

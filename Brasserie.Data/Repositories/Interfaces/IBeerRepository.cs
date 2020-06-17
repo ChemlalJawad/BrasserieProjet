@@ -7,8 +7,8 @@ namespace Brasserie.Data.Repositories.Interfaces
     {
         //Pour moi check si j'ai tout
         IEnumerable<Beer> GetAll();
-        void CreateBeer(Beer beer);
-        Beer FindBeerById(int beerId);
+        void Create(Beer beer);
+        Beer FindById(int beerId);
         void Delete(int beerId);
     }
 }

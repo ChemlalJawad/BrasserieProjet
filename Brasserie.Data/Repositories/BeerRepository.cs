@@ -23,17 +23,17 @@ namespace Brasserie.Data.Repositories
             return beers;
         }
 
-        public void CreateBeer(Beer beer)
+        public void Create(Beer beer)
         {
             _brasserieContext.Beers.Add(beer);
             _brasserieContext.SaveChanges();
         }
 
-        public Beer FindBeerById(int beerId)
+        public Beer FindById(int beerId)
         {
             var beerResult = _brasserieContext.Beers
                 .Include(b => b.Brewer)
-                    .FirstOrDefault(e => e.Id == beerId);
+                .FirstOrDefault(e => e.Id == beerId);
 
             return beerResult;
         }

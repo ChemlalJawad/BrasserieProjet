@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Brasserie.Core.Domains;
 using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Beers.Services.Interfaces;
@@ -19,8 +20,8 @@ namespace Brasserie.Service.Beers.Services
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
-            var brewer = _brewerRepository.FindBrewerById(command.BrewerId);
-            if (brewer == null) return null;
+            var brewer = _brewerRepository.FindById(command.BrewerId);
+            if (brewer == null) throw new Exception("Brewer does not exist");
 
             var beer = new Beer
             {
@@ -29,7 +30,7 @@ namespace Brasserie.Service.Beers.Services
                 Price = command.Price,
                 Brewer = brewer
             };
-            _beerRepository.CreateBeer(beer);
+            _beerRepository.Create(beer);
 
             return beer;
         }
@@ -41,7 +42,7 @@ namespace Brasserie.Service.Beers.Services
 
         public Beer FindById(int Id)
         {
-            return _beerRepository.FindBeerById(Id);
+            return _beerRepository.FindById(Id);
         }
 
         public IEnumerable<Beer> GetAll()

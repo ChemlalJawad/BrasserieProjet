@@ -14,12 +14,12 @@ namespace Brasserie.Data.Repositories
             _brasserieContext = brasserieContext;
         }
 
-        public Wholesaler FindWholesalerById(int Id)
+        public Wholesaler FindById(int Id)
         {
             var wholesaler =  _brasserieContext.Wholesalers
                 .Include(e => e.WholesalerBeers)
-                 .ThenInclude(e => e.Beer)
-                    .SingleOrDefault(e => e.Id == Id);
+                .ThenInclude(e => e.Beer)
+                .SingleOrDefault(e => e.Id == Id);
          
             return wholesaler;
         }

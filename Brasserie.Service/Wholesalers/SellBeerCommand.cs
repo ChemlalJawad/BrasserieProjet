@@ -1,6 +1,6 @@
 ﻿namespace Brasserie.Service.Wholesalers
 {
-    public class SellBeerOrUpdateStockCommand
+    public class SellBeerCommand
     {
         public int BeerId { get; set; }
         public int WholesalerId { get; set; }
