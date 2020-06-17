@@ -41,7 +41,7 @@ namespace Brasserie.Service.Wholesalers.Services
                     && e.BeerId == item.BeerId)
                     .SingleOrDefault().Stock;
 
-                if(stock >= item.Quantity && stock != 0) 
+                if(stock >= item.Quantity) 
                 {
                     totalPrice += beer.Price * item.Quantity;
                 }
