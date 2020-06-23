@@ -2,7 +2,6 @@
 using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Wholesalers.Services.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Brasserie.Service.Wholesalers.Services
@@ -24,7 +23,7 @@ namespace Brasserie.Service.Wholesalers.Services
             var wholesaler = _wholesalerRepository.FindById(command.WholesalerId);
             if (wholesaler == null) throw new Exception("Wholesaler does not exist!");
 
-            if(command.Items.GroupBy(e => e.BeerId)
+            if (command.Items.GroupBy(e => e.BeerId)
                 .Select( x => x.First())
                 .ToList()
                 .Count()  < command.Items.Count())
@@ -41,7 +40,7 @@ namespace Brasserie.Service.Wholesalers.Services
                     && e.BeerId == item.BeerId)
                     .SingleOrDefault().Stock;
 
-                if(stock >= item.Quantity) 
+                if (stock >= item.Quantity) 
                 {
                     totalPrice += beer.Price * item.Quantity;
                 }
@@ -50,7 +49,7 @@ namespace Brasserie.Service.Wholesalers.Services
                     throw new Exception("You don't have enough stocks!");
                 }
           
-                if(item.Quantity > 10 && item.Quantity < 21) 
+                if (item.Quantity > 10 && item.Quantity < 21) 
                 {
                     var discountPrice10 = (beer.Price * item.Quantity) * 0.10;
                     totalPrice -= discountPrice10;
@@ -62,7 +61,6 @@ namespace Brasserie.Service.Wholesalers.Services
                 }
             
             }
-
             return totalPrice;
         }
 

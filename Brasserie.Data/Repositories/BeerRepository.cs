@@ -18,8 +18,13 @@ namespace Brasserie.Data.Repositories
 
         public IEnumerable<Beer> GetAll()
         {
-            var beers = _brasserieContext.Beers.ToList();
-
+            var beers = _brasserieContext
+                .Beers
+                .Include(e => e.Brewer)
+                .ThenInclude (e => e.Beers)
+                .ThenInclude(e => e.WholesalerBeers)
+                .ToList();
+           
             return beers;
         }
 

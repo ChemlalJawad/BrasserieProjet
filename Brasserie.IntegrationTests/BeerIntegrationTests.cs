@@ -59,8 +59,8 @@ namespace Brasserie.IntegrationTests
                 {
                     AlcoholPercentage = 1.00,
                     Name = "Jaja",
-                    Price = 70,
-                    BrewerId = 1
+                    Price = 2.70,
+                    BrewerId = 2
                 }),
                  Encoding.UTF8,
                 "application/json"));
@@ -69,5 +69,6 @@ namespace Brasserie.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         }
+        
     }
 }

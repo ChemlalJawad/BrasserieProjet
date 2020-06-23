@@ -20,6 +20,9 @@ namespace Brasserie.Service.Beers.Services
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
+            if (command.Name == null) throw new Exception("Name of beer does not exist");
+            if (command.Price == 0) throw new Exception("Beer can't be free, Add a good amount");
+           
             var brewer = _brewerRepository.FindById(command.BrewerId);
             if (brewer == null) throw new Exception("Brewer does not exist");
 
@@ -30,6 +33,7 @@ namespace Brasserie.Service.Beers.Services
                 Price = command.Price,
                 Brewer = brewer
             };
+           
             _beerRepository.Create(beer);
 
             return beer;
@@ -47,7 +51,9 @@ namespace Brasserie.Service.Beers.Services
 
         public IEnumerable<Beer> GetAll()
         {
-            return _beerRepository.GetAll();
+            var beers = _beerRepository.GetAll();
+            if (beers == null) throw new Exception("List of beers is null");
+            return beers;
         }
     }
 }
