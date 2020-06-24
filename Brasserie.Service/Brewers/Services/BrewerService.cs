@@ -11,7 +11,7 @@ namespace Brasserie.Service.Brewers.Services
 
         public BrewerService(IBrewerRepository brewerRepository)
         {
-            _brewerRepository = brewerRepository;
+            _brewerRepository = brewerRepository;          
         }
 
         public Brewer FindBrewerById(int Id)

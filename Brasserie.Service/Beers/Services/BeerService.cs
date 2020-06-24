@@ -11,12 +11,21 @@ namespace Brasserie.Service.Beers.Services
         private readonly IBeerRepository _beerRepository;
         private readonly IBrewerRepository _brewerRepository;
 
+        public BeerService(IBeerRepository beerRepository)
+        {
+            _beerRepository = beerRepository;
+        }
+
+        public BeerService(IBrewerRepository brewerRepository)
+        {
+            _brewerRepository = brewerRepository;
+        }
+
         public BeerService(IBrewerRepository brewerRepository, IBeerRepository beerRepository)
         {
             _brewerRepository = brewerRepository;
             _beerRepository = beerRepository;
         }
-
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
