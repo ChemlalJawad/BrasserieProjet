@@ -2,6 +2,7 @@
 using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Wholesalers.Services.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Brasserie.Service.Wholesalers.Services
@@ -18,7 +19,7 @@ namespace Brasserie.Service.Wholesalers.Services
 
         public double GetQuotation(QuotationCommand command)
         {
-            if (command.Items == null) throw new Exception("Command can' be null !");
+            if (command.Items == null) throw new Exception("Command can't be null !");
                         
             var wholesaler = _wholesalerRepository.FindById(command.WholesalerId);
             if (wholesaler == null) throw new Exception("Wholesaler does not exist!");
@@ -66,24 +67,59 @@ namespace Brasserie.Service.Wholesalers.Services
 
         public void SellNewBeer(SellBeerCommand command)
         {
+            if (command == null) throw new Exception("Command can't be null");
+           
+            if (command.BeerId == default) throw new Exception("Beer does not exist");
+
+            if (command.WholesalerId == default ) throw new Exception("Wholesaler does not exist");
+
+            if (command.Stock < 0) throw new Exception("You can't add a negative stock");
+
+            var wholesalerbeers = _wholesalerRepository.GetAll();
+            foreach (var item in wholesalerbeers)
+            {
+                if (item.WholesalerId == command.WholesalerId && item.BeerId == command.BeerId) 
+                {
+                     throw new Exception("Wholesaler already sell this beer");                  
+                }
+            }
             var sellNewBeer = new WholesalerBeer()
             {
                 BeerId = command.BeerId,
                 WholesalerId = command.WholesalerId,
                 Stock = command.Stock
             };
-            _wholesalerRepository.SellNewBeer(sellNewBeer);
+            _wholesalerRepository.SellNewBeer(sellNewBeer);          
         }
 
-        public void UpdateStock(UpdateStockCommand command)
+        public WholesalerBeer UpdateStock(UpdateStockCommand command)
         {
+            if (command == null) throw new Exception("Command can't be null");
+
+            if (command.BeerId == default) throw new Exception("Beer does not exist");
+
+            if (command.WholesalerId == default) throw new Exception("Wholesaler does not exist");
+
+            if (command.Stock < 0) throw new Exception("You can't add a negative stock");
             var updateStock = new WholesalerBeer()
             {
                 BeerId = command.BeerId,
-                WholesalerId = command.WholesalerId
+                WholesalerId = command.WholesalerId,
+                Stock = command.Stock
             };
             _wholesalerRepository.UpdateStock(updateStock);
+            return updateStock; 
         }
+        public List<WholesalerBeer> GetAll() 
+        {
 
+            var wholesalerbeers = _wholesalerRepository.GetAll();
+            return wholesalerbeers;
+        }   
+        public List<Wholesaler> GetAllWholesalers()
+        {
+            var wholesalerbeers = _wholesalerRepository.GetAllWholesalers();
+            return wholesalerbeers;
+        }      
     }
 }
