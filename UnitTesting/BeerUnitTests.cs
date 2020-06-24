@@ -12,7 +12,6 @@ using Assert = NUnit.Framework.Assert;
 
 namespace UnitTesting
 {
-    
     public class BeerUnitTests
     {
         [Fact]
