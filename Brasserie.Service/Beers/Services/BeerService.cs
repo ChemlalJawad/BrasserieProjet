@@ -29,11 +29,19 @@ namespace Brasserie.Service.Beers.Services
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
+            if (command == null)  throw new Exception("Null"); ;
             if (command.Name == null) throw new Exception("Name of beer does not exist");
-            if (command.Price == 0) throw new Exception("Beer can't be free, Add a good amount");
+            if (command.Price <= 0) throw new Exception("Beer can't be free, Add a good amount");
+            var brewer = new Brewer();
            
-            var brewer = _brewerRepository.FindById(command.BrewerId);
-            if (brewer == null) throw new Exception("Brewer does not exist");
+            try
+            {
+                 brewer = _brewerRepository.FindById(command.BrewerId);
+            }
+            catch(Exception e) 
+            {
+                throw new Exception("Brewer does not exist");
+            }
 
             var beer = new Beer
             {

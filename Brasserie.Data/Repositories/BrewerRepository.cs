@@ -20,7 +20,7 @@ namespace Brasserie.Data.Repositories
             var brewer = _brasserieContext.Brewers
                 .Include(e => e.Beers)
                 .ThenInclude(e => e.WholesalerBeers)
-                .FirstOrDefault(e => e.Id == Id);
+                .SingleOrDefault(e => e.Id == Id);
             
             return brewer;
         }
