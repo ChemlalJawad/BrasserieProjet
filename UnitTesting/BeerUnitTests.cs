@@ -2,11 +2,8 @@ using Brasserie.Core.Domains;
 using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Beers;
 using Brasserie.Service.Beers.Services;
-using Brasserie.Service.Brewers.Services;
 using Moq;
-using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using Xunit;
 using Assert = NUnit.Framework.Assert;
 

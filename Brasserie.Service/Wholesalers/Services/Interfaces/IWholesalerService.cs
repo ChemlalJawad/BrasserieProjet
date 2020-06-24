@@ -10,6 +10,5 @@ namespace Brasserie.Service.Wholesalers.Services.Interfaces
         WholesalerBeer UpdateStock(UpdateStockCommand command);
         double GetQuotation(QuotationCommand command);
         List<WholesalerBeer> GetAll();
-        List<Wholesaler> GetAllWholesalers();
     }
 }

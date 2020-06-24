@@ -1,16 +1,12 @@
 ﻿using Brasserie.Core.Domains;
-using Brasserie.Data.Repositories;
 using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Wholesalers;
 using Brasserie.Service.Wholesalers.Services;
 using Brasserie.Service.Wholesalers.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using Xunit;
 
 namespace UnitTesting
@@ -128,6 +124,7 @@ namespace UnitTesting
                 new WholesalerBeer(){ BeerId = 1 ,WholesalerId = 2, Stock = 10 },
                 new WholesalerBeer(){ BeerId = 2 ,WholesalerId = 3, Stock = 10 }
             };
+
             wholesalerRepositoryMock.Setup(e => e.GetAll()).Returns(wholesalerbeers);
             try
             {
@@ -139,6 +136,7 @@ namespace UnitTesting
                 Assert.Equal("You can't add a negative stock", e.Message);
             }
         }
+
         [Fact]
         public void UpdateStock_Stock_Ok()
         {
@@ -152,6 +150,7 @@ namespace UnitTesting
                 new WholesalerBeer(){ BeerId = 1 ,WholesalerId = 2, Stock = 10 },
                 new WholesalerBeer(){ BeerId = 2 ,WholesalerId = 3, Stock = 10 }
             };
+
             wholesalerRepositoryMock.Setup(e => e.GetAll()).Returns(wholesalerbeers);
             var result = wholesalerService.UpdateStock(updateBeerCommand);
 
@@ -172,6 +171,7 @@ namespace UnitTesting
                 TotalPrice = 100,
                 Items = null
             };
+
             try
             {
                 wholesalerService.GetQuotation(quotationCommand);
@@ -198,6 +198,7 @@ namespace UnitTesting
                     new ItemCommand() { BeerId= 2, Quantity = 5}
                 }
             };
+
             try
             {
                 wholesalerService.GetQuotation(quotationCommand);
@@ -224,6 +225,7 @@ namespace UnitTesting
                     new ItemCommand() { BeerId= 7, Quantity = 10}
                 }
             };
+
             try
             {
                 wholesalerService.GetQuotation(quotationCommand);
@@ -250,6 +252,7 @@ namespace UnitTesting
                     new ItemCommand() { BeerId= 7, Quantity = 10}
                 }
             };
+
             try
             {
                 wholesalerService.GetQuotation(quotationCommand);
@@ -280,6 +283,7 @@ namespace UnitTesting
                     }
                 }
             };
+
             try
             {
                 wholesalerService.GetQuotation(quotationCommand);
