@@ -300,7 +300,7 @@ namespace UnitTesting
         }
 
         [Fact]
-        public void GetQuotation_Discount_IsOk()
+        public void GetQuotation_Discount10_IsOk()
         {
             wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
             beerRepositoryMock = new Mock<IBeerRepository>();
@@ -310,14 +310,66 @@ namespace UnitTesting
   
             QuotationCommand quotationCommand = new QuotationCommand()
             {  
-                WholesalerId = 1,          
-                TotalPrice = 100,
+                WholesalerId = 1,
                 Items = new List<ItemCommand>
                 {
                     new ItemCommand()
                     { 
                         BeerId= 1,
                         Quantity = 20
+                    }
+                }
+            };
+
+            var actual = wholesalerService.GetQuotation(quotationCommand);
+            Assert.Equal(expect, actual);
+            
+        }
+        [Fact]
+        public void GetQuotation_NoDiscount_IsOk()
+        {
+            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
+            beerRepositoryMock = new Mock<IBeerRepository>();
+            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
+            var expect = 90;
+            LoadMockData();
+  
+            QuotationCommand quotationCommand = new QuotationCommand()
+            {  
+                WholesalerId = 1,          
+                Items = new List<ItemCommand>
+                {
+                    new ItemCommand()
+                    { 
+                        BeerId= 1,
+                        Quantity = 9
+                    }
+                }
+            };
+
+            var actual = wholesalerService.GetQuotation(quotationCommand);
+            Assert.Equal(expect, actual);
+            
+        }
+        
+        [Fact]
+        public void GetQuotation_Discount20_IsOk()
+        {
+            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
+            beerRepositoryMock = new Mock<IBeerRepository>();
+            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
+            var expect = 200;
+            LoadMockData();
+  
+            QuotationCommand quotationCommand = new QuotationCommand()
+            {  
+                WholesalerId = 1, 
+                Items = new List<ItemCommand>
+                {
+                    new ItemCommand()
+                    { 
+                        BeerId= 1,
+                        Quantity = 25
                     }
                 }
             };
