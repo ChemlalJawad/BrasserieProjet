@@ -21,52 +21,52 @@ namespace UnitTesting
         {
             wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
             beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object,beerRepositoryMock.Object);
+            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
 
             SellBeerCommand sellBeerCommand = null;
             try
-            { 
+            {
                 wholesalerService.SellNewBeer(sellBeerCommand);
             }
             catch (Exception e)
             {
                 Assert.Equal("Command can't be null", e.Message);
-            }       
+            }
         }
 
-         [Fact]
+        [Fact]
         public void SellBeer_BeerIdIsNull_ThrowException()
         {
             wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
             beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object,beerRepositoryMock.Object);
+            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
 
-            SellBeerCommand sellBeerCommand = new SellBeerCommand() {WholesalerId = 1 , Stock = 10};
+            SellBeerCommand sellBeerCommand = new SellBeerCommand() { WholesalerId = 1, Stock = 10 };
             try
-            { 
+            {
                 wholesalerService.SellNewBeer(sellBeerCommand);
             }
             catch (Exception e)
             {
                 Assert.Equal("Beer does not exist", e.Message);
-            }       
-        } 
+            }
+        }
         [Fact]
         public void SellBeer_WholesalerIdIsNull_ThrowException()
         {
             wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
             beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object,beerRepositoryMock.Object);
+            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
 
-            SellBeerCommand sellBeerCommand = new SellBeerCommand() {BeerId = 1 , Stock = 10};
+            SellBeerCommand sellBeerCommand = new SellBeerCommand() { BeerId = 1, Stock = 10 };
             try
-            { 
+            {
                 wholesalerService.SellNewBeer(sellBeerCommand);
             }
             catch (Exception e)
             {
                 Assert.Equal("Wholesaler does not exist", e.Message);
-            }       
+            }
         }
 
         [Fact]
@@ -74,18 +74,18 @@ namespace UnitTesting
         {
             wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
             beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object,beerRepositoryMock.Object);
+            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
 
-            SellBeerCommand sellBeerCommand = new SellBeerCommand() {BeerId = 1 ,WholesalerId = 2, Stock = -10};
+            SellBeerCommand sellBeerCommand = new SellBeerCommand() { BeerId = 1, WholesalerId = 2, Stock = -10 };
             try
-            { 
+            {
                 wholesalerService.SellNewBeer(sellBeerCommand);
             }
 
             catch (Exception e)
             {
                 Assert.Equal("You can't add a negative stock", e.Message);
-            }       
+            }
         }
 
         [Fact]
@@ -103,15 +103,15 @@ namespace UnitTesting
             };
 
             wholesalerRepositoryMock.Setup(e => e.GetAll()).Returns(wholesalerbeers);
-            try 
-            { 
-                wholesalerService.SellNewBeer(sellBeerCommand); 
+            try
+            {
+                wholesalerService.SellNewBeer(sellBeerCommand);
 
             }
             catch (Exception e)
             {
                 Assert.Equal("Wholesaler already sell this beer", e.Message);
-            }    
+            }
         }
 
         [Fact]
@@ -154,12 +154,12 @@ namespace UnitTesting
                 new WholesalerBeer(){ BeerId = 2 ,WholesalerId = 3, Stock = 10 }
             };
 
-            wholesalerRepositoryMock.Setup(e => e.GetAll()).Returns(wholesalerbeers);            
+            wholesalerRepositoryMock.Setup(e => e.GetAll()).Returns(wholesalerbeers);
             var result = wholesalerService.UpdateStock(updateBeerCommand);
             Assert.Equal(updateBeerCommand.Stock, result.Stock);
-   
+
         }
-              
+
         [Fact]
         public void GetQuotation_CommandItemIsNull_ThrowException()
         {
@@ -189,10 +189,11 @@ namespace UnitTesting
         {
             wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
             beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);               
-            
+            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
+
             QuotationCommand quotationCommand = new QuotationCommand()
-            {   WholesalerId = 2,          
+            {
+                WholesalerId = 2,
                 TotalPrice = 100,
                 Items = new List<ItemCommand>
                 {
@@ -219,8 +220,8 @@ namespace UnitTesting
             LoadMockData();
 
             QuotationCommand quotationCommand = new QuotationCommand()
-            {  
-                WholesalerId = 1,          
+            {
+                WholesalerId = 1,
                 TotalPrice = 100,
                 Items = new List<ItemCommand>
                 {
@@ -238,7 +239,7 @@ namespace UnitTesting
                 Assert.Equal("You can't have duplicates items in your Order", e.Message);
             }
         }
-        
+
         [Fact]
         public void GetQuotation_BeerNotExist_ThrowException()
         {
@@ -248,8 +249,8 @@ namespace UnitTesting
             LoadMockData();
 
             QuotationCommand quotationCommand = new QuotationCommand()
-            {  
-                WholesalerId = 1,          
+            {
+                WholesalerId = 1,
                 TotalPrice = 100,
                 Items = new List<ItemCommand>
                 {
@@ -274,15 +275,15 @@ namespace UnitTesting
             beerRepositoryMock = new Mock<IBeerRepository>();
             wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
             LoadMockData();
-  
+
             QuotationCommand quotationCommand = new QuotationCommand()
-            {  
-                WholesalerId = 1,          
+            {
+                WholesalerId = 1,
                 TotalPrice = 100,
                 Items = new List<ItemCommand>
                 {
                     new ItemCommand()
-                    { 
+                    {
                         BeerId= 1,
                         Quantity = 40
                     }
@@ -307,14 +308,14 @@ namespace UnitTesting
             wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
             var expect = 180;
             LoadMockData();
-  
+
             QuotationCommand quotationCommand = new QuotationCommand()
-            {  
+            {
                 WholesalerId = 1,
                 Items = new List<ItemCommand>
                 {
                     new ItemCommand()
-                    { 
+                    {
                         BeerId= 1,
                         Quantity = 20
                     }
@@ -323,7 +324,7 @@ namespace UnitTesting
 
             var actual = wholesalerService.GetQuotation(quotationCommand);
             Assert.Equal(expect, actual);
-            
+
         }
         [Fact]
         public void GetQuotation_NoDiscount_IsOk()
@@ -333,14 +334,14 @@ namespace UnitTesting
             wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
             var expect = 90;
             LoadMockData();
-  
+
             QuotationCommand quotationCommand = new QuotationCommand()
-            {  
-                WholesalerId = 1,          
+            {
+                WholesalerId = 1,
                 Items = new List<ItemCommand>
                 {
                     new ItemCommand()
-                    { 
+                    {
                         BeerId= 1,
                         Quantity = 9
                     }
@@ -349,9 +350,9 @@ namespace UnitTesting
 
             var actual = wholesalerService.GetQuotation(quotationCommand);
             Assert.Equal(expect, actual);
-            
+
         }
-        
+
         [Fact]
         public void GetQuotation_Discount20_IsOk()
         {
@@ -360,14 +361,14 @@ namespace UnitTesting
             wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
             var expect = 200;
             LoadMockData();
-  
+
             QuotationCommand quotationCommand = new QuotationCommand()
-            {  
-                WholesalerId = 1, 
+            {
+                WholesalerId = 1,
                 Items = new List<ItemCommand>
                 {
                     new ItemCommand()
-                    { 
+                    {
                         BeerId= 1,
                         Quantity = 25
                     }
@@ -376,7 +377,7 @@ namespace UnitTesting
 
             var actual = wholesalerService.GetQuotation(quotationCommand);
             Assert.Equal(expect, actual);
-            
+
         }
 
         internal void LoadMockData()
@@ -417,13 +418,13 @@ namespace UnitTesting
                     }
                 }
             };
-           
+
             wholesalerRepositoryMock.Setup(e => e.GetAlls()).Returns(beers);
             wholesalerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => wholesalers.Where(ws => ws.Id == arg1).SingleOrDefault());
             beerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => beers.Where(b => b.Id == arg1).SingleOrDefault());
         }
 
-        private Mock<IWholesalerRepository> wholesalerRepositoryMock; 
+        private Mock<IWholesalerRepository> wholesalerRepositoryMock;
         private Mock<IBeerRepository> beerRepositoryMock;
         private WholesalerService wholesalerService;
     }
