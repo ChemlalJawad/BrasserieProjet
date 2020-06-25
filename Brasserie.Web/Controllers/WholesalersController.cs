@@ -31,10 +31,10 @@ namespace Brasserie.Web.Controllers
 
         [HttpPost]
         [Route("wholesalers/{stock}")]
-        public ActionResult<WholesalerBeer> UpdateStock(UpdateWholesalerCommand command, [FromRoute] int stock)
+        public ActionResult<WholesalerBeer> UpdateStock(UpdateStockCommand command, [FromRoute] int stock)
         {
             command.Stock = stock;
-            _wholesalerService.UpdateStock(command);
+            _wholesalerService.UpdateWholesalerBeer(command);
 
             return Ok();
         }
