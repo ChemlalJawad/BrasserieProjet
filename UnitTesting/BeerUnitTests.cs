@@ -102,9 +102,7 @@ namespace UnitTesting
                 }
             };
           
-            IQueryable<Beer> query = beers.AsQueryable();
-            var mockData = query.Include(e => e.Brewer).ThenInclude(e => e.Beers).ThenInclude(e => e.WholesalerBeers).ToList();
-            beerRepositoryMock.Setup(e => e.GetAll()).Returns(mockData);
+            beerRepositoryMock.Setup(e => e.GetAll()).Returns(beers);
             brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => brewers.Where(b => b.Id == arg1).SingleOrDefault());
 
             CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaj", AlcoholPercentage = 10, Price = 15, BrewerId = 4 };
@@ -125,6 +123,7 @@ namespace UnitTesting
             brewerRepositoryMock = new Mock<IBrewerRepository>();
             beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
             
+
             List<Brewer> brewers = new List<Brewer>() {
                  new Brewer() { Id = 1, Name = "Le chef" },
                  new Brewer() { Id = 2, Name = "Jade" }
@@ -154,15 +153,12 @@ namespace UnitTesting
                     }
                 }
             };
-            Beer expect = new Beer() {Name = "Jaja", AlcoholPercentage = 10, Price = 15, Brewer = brewers[0] };
-            IQueryable<Beer> query = beers.AsQueryable();
-            var mockData = query.Include(e => e.Brewer).ThenInclude(e => e.Beers).ThenInclude(e=>e.WholesalerBeers).ToList();
-            beerRepositoryMock.Setup(e => e.GetAll()).Returns(mockData);
-            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => brewers.Where(b => b.Id == arg1).SingleOrDefault());
-            
+            Beer expect = new Beer() { Name = "Jaja", AlcoholPercentage = 10, Price = 15, Brewer = brewers[0] };
+            beerRepositoryMock.Setup(e => e.GetAll()).Returns(beers);
+            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => brewers.Where(b => b.Id == arg1).SingleOrDefault());           
             CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaja", AlcoholPercentage = 10, Price = 15, BrewerId = 1 };
-
             Beer actual = beerService.CreateBeer(createBeerCmd);
+
             Assert.AreEqual(expect.Name, actual.Name);      
             Assert.AreEqual(expect.Price, actual.Price);      
             Assert.AreEqual(expect.Brewer, actual.Brewer);      

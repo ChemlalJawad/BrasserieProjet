@@ -417,10 +417,8 @@ namespace UnitTesting
                     }
                 }
             };
-
-            IQueryable<Beer> query = beers.AsQueryable();
-            var list = query.Include(e => e.WholesalerBeers).ThenInclude(e => e.Wholesaler).ToList();
-            wholesalerRepositoryMock.Setup(e => e.GetAlls()).Returns(list);
+           
+            wholesalerRepositoryMock.Setup(e => e.GetAlls()).Returns(beers);
             wholesalerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => wholesalers.Where(ws => ws.Id == arg1).SingleOrDefault());
             beerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => beers.Where(b => b.Id == arg1).SingleOrDefault());
         }
