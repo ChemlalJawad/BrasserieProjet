@@ -114,6 +114,11 @@ namespace Brasserie.Service.Wholesalers.Services
         {
             var wholesalerbeers = _wholesalerRepository.GetAll();
             return wholesalerbeers;
+        }  
+        public List<Beer> GetAlls() 
+        {
+            var wholesalerbeers = _wholesalerRepository.GetAlls();
+            return wholesalerbeers;
         }    
     }
 }

@@ -35,6 +35,15 @@ namespace Brasserie.Data.Repositories
 
            return wholesalerbeers;
         } 
+        public List<Beer> GetAlls()
+        {
+           var wholesalerbeers= _brasserieContext.Beers
+                 .Include(e => e.WholesalerBeers)
+                 .ThenInclude(e => e.Wholesaler)
+                 .ToList();
+
+           return wholesalerbeers;
+        } 
 
         public void SellNewBeer(WholesalerBeer wholesalerBeer)
         {

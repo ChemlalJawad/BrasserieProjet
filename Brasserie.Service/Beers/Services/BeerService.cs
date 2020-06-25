@@ -32,17 +32,10 @@ namespace Brasserie.Service.Beers.Services
             if (command == null)  throw new Exception("Null"); ;
             if (command.Name == null) throw new Exception("Name of beer does not exist");
             if (command.Price <= 0) throw new Exception("Beer can't be free, Add a good amount");
-            var brewer = new Brewer();
            
-            try
-            {
-                 brewer = _brewerRepository.FindById(command.BrewerId);
-            }
-            catch(Exception e) 
-            {
-                throw new Exception("Brewer does not exist");
-            }
-
+            var brewer  = _brewerRepository.FindById(command.BrewerId);
+            if(brewer == null) throw new Exception("Brewer does not exist");
+            
             var beer = new Beer
             {
                 Name = command.Name,
@@ -52,7 +45,6 @@ namespace Brasserie.Service.Beers.Services
             };
            
             _beerRepository.Create(beer);
-
             return beer;
         }
 
