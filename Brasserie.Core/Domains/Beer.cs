@@ -6,14 +6,10 @@ namespace Brasserie.Core.Domains
 {
     public class Beer
     {
-        public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
-        [Required]
+        public int Id { get; set; }       
+        public string Name { get; set; } 
         public double AlcoholPercentage { get; set; }
-        [Required]
         public double Price { get; set; }
-        [Required]
         public Brewer Brewer { get; set; }
         public ICollection<WholesalerBeer> WholesalerBeers { get; set; }
     }

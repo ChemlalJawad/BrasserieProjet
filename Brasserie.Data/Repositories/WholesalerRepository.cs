@@ -15,43 +15,34 @@ namespace Brasserie.Data.Repositories
             _brasserieContext = brasserieContext;
         }
 
-        public Wholesaler FindById(int Id)
+        public Wholesaler FindById(int id)
         {
             var wholesaler =  _brasserieContext.Wholesalers
-                .Include(e => e.WholesalerBeers)
-                .ThenInclude(e => e.Beer)
-                .SingleOrDefault(e => e.Id == Id);
+                 .Include(e => e.WholesalerBeers)
+                 .ThenInclude(e => e.Beer)
+                 .SingleOrDefault(e => e.Id == id);
          
             return wholesaler;
         }
 
         public List<WholesalerBeer> GetAll()
         {
-           var wholesalerbeers= _brasserieContext.WholesalerBeers
+            var wholesalerbeers= _brasserieContext.WholesalerBeers
                  .Include(e => e.Wholesaler)
                  .ThenInclude(e => e.WholesalerBeers)
                  .ThenInclude(e => e.Beer)
                  .ToList();
 
-           return wholesalerbeers;
-        } 
-        public List<Beer> GetAlls()
-        {
-           var wholesalerbeers= _brasserieContext.Beers
-                 .Include(e => e.WholesalerBeers)
-                 .ThenInclude(e => e.Wholesaler)
-                 .ToList();
-
-           return wholesalerbeers;
+            return wholesalerbeers;
         } 
 
-        public void SellNewBeer(WholesalerBeer wholesalerBeer)
+        public void Add(WholesalerBeer wholesalerBeer)
         {
             _brasserieContext.WholesalerBeers.Add(wholesalerBeer);
             _brasserieContext.SaveChanges();
         }
 
-        public void UpdateStock(WholesalerBeer wholesalerBeer)
+        public void Update(WholesalerBeer wholesalerBeer)
         {
             _brasserieContext.WholesalerBeers.Update(wholesalerBeer);
             _brasserieContext.SaveChanges();

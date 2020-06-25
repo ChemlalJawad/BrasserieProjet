@@ -20,12 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brasserie.Service", "Brasse
 		{1D9EC5FD-2DAD-4557-8264-86C42A154FE1} = {1D9EC5FD-2DAD-4557-8264-86C42A154FE1}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Brasserie.IntegrationTests", "Brasserie.IntegrationTests\Brasserie.IntegrationTests.csproj", "{743FEB0F-01CE-4C9D-9702-B269DE2A4FF7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{899AD7EC-16B1-4E6C-85B3-46DC54AA7A7B} = {899AD7EC-16B1-4E6C-85B3-46DC54AA7A7B}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "UnitTesting\UnitTesting.csproj", "{67C44338-A4E7-4C98-8D16-1227A76CEE57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTesting", "UnitTesting\UnitTesting.csproj", "{67C44338-A4E7-4C98-8D16-1227A76CEE57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +44,6 @@ Global
 		{8A74C6C9-CEDD-4B8A-96EB-CF1F32E93802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A74C6C9-CEDD-4B8A-96EB-CF1F32E93802}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A74C6C9-CEDD-4B8A-96EB-CF1F32E93802}.Release|Any CPU.Build.0 = Release|Any CPU
-		{743FEB0F-01CE-4C9D-9702-B269DE2A4FF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{743FEB0F-01CE-4C9D-9702-B269DE2A4FF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{743FEB0F-01CE-4C9D-9702-B269DE2A4FF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{743FEB0F-01CE-4C9D-9702-B269DE2A4FF7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67C44338-A4E7-4C98-8D16-1227A76CEE57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67C44338-A4E7-4C98-8D16-1227A76CEE57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67C44338-A4E7-4C98-8D16-1227A76CEE57}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -6,6 +6,6 @@ namespace Brasserie.Service.Brewers.Services.Interfaces
     public interface IBrewerService
     {
         IEnumerable<Brewer> GetAllBeers();
-        Brewer FindBrewerById(int Id);
+        Brewer FindBrewerById(int id);
     }
 }

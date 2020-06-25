@@ -14,11 +14,17 @@ namespace UnitTesting
 {
     public class BeerUnitTests
     {
+
+        private Mock<IBrewerRepository> brewerRepositoryMock;
+        private Mock<IBeerRepository> beerRepositoryMock;
+        private BeerService beerService;
+
         [Fact]
         public void AddBeer_CommandIsNull_ThrowException()
         {
             beerRepositoryMock = new Mock<IBeerRepository>();
-            beerService = new BeerService(beerRepositoryMock.Object);
+            brewerRepositoryMock = new Mock<IBrewerRepository>();
+            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
 
             CreateBeerCommand createBeerCmd = null;
             try
@@ -27,7 +33,7 @@ namespace UnitTesting
             }
             catch (Exception e)
             {
-                Assert.AreEqual("Null", e.Message);
+                Assert.AreEqual("Command can't be null", e.Message);
             }
         }
 
@@ -35,7 +41,8 @@ namespace UnitTesting
         public void AddBeer_CommandNameIsNull_ThrowException()
         {
             beerRepositoryMock = new Mock<IBeerRepository>();
-            beerService = new BeerService(beerRepositoryMock.Object);
+            brewerRepositoryMock = new Mock<IBrewerRepository>();
+            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
 
             CreateBeerCommand createBeerCmd = new CreateBeerCommand() { AlcoholPercentage = 10, Price = 15, BrewerId = 1 };
             try
@@ -52,7 +59,8 @@ namespace UnitTesting
         public void AddBeer_CommandAmountIsNull_ThrowException()
         {
             beerRepositoryMock = new Mock<IBeerRepository>();
-            beerService = new BeerService(beerRepositoryMock.Object);
+            brewerRepositoryMock = new Mock<IBrewerRepository>();
+            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
 
             CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaj", AlcoholPercentage = 10, Price = -15.00, BrewerId = 1 };
             try
@@ -103,7 +111,7 @@ namespace UnitTesting
             };
 
             beerRepositoryMock.Setup(e => e.GetAll()).Returns(beers);
-            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => brewers.Where(b => b.Id == arg1).SingleOrDefault());
+            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns(brewers[0]);
 
             CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaj", AlcoholPercentage = 10, Price = 15, BrewerId = 4 };
             try
@@ -155,7 +163,7 @@ namespace UnitTesting
             };
             Beer expect = new Beer() { Name = "Jaja", AlcoholPercentage = 10, Price = 15, Brewer = brewers[0] };
             beerRepositoryMock.Setup(e => e.GetAll()).Returns(beers);
-            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => brewers.Where(b => b.Id == arg1).SingleOrDefault());
+            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((brewers[0]));
             CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaja", AlcoholPercentage = 10, Price = 15, BrewerId = 1 };
             Beer actual = beerService.CreateBeer(createBeerCmd);
 
@@ -163,9 +171,5 @@ namespace UnitTesting
             Assert.AreEqual(expect.Price, actual.Price);
             Assert.AreEqual(expect.Brewer, actual.Brewer);
         }
-
-        private Mock<IBrewerRepository> brewerRepositoryMock;
-        private Mock<IBeerRepository> beerRepositoryMock;
-        private BeerService beerService;
     }
 }

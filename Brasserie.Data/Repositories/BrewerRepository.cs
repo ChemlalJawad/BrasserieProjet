@@ -15,12 +15,12 @@ namespace Brasserie.Data.Repositories
             _brasserieContext = brasserieContext;
         }
 
-        public Brewer FindById(int Id)
+        public Brewer FindById(int id)
         {
             var brewer = _brasserieContext.Brewers
                 .Include(e => e.Beers)
                 .ThenInclude(e => e.WholesalerBeers)
-                .SingleOrDefault(e => e.Id == Id);
+                .SingleOrDefault(e => e.Id == id);
             
             return brewer;
         }
@@ -28,10 +28,10 @@ namespace Brasserie.Data.Repositories
         public IEnumerable<Brewer> GetAllBeers()
         {
             var beers = _brasserieContext.Brewers
-                    .Include(e => e.Beers)
-                    .ThenInclude(e => e.WholesalerBeers)
-                    .ThenInclude( e=> e.Wholesaler)
-                    .ToList();
+                .Include(e => e.Beers)
+                .ThenInclude(e => e.WholesalerBeers)
+                .ThenInclude( e=> e.Wholesaler)
+                .ToList();
 
             return beers;
         }

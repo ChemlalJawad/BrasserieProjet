@@ -11,16 +11,6 @@ namespace Brasserie.Service.Beers.Services
         private readonly IBeerRepository _beerRepository;
         private readonly IBrewerRepository _brewerRepository;
 
-        public BeerService(IBeerRepository beerRepository)
-        {
-            _beerRepository = beerRepository;
-        }
-
-        public BeerService(IBrewerRepository brewerRepository)
-        {
-            _brewerRepository = brewerRepository;
-        }
-
         public BeerService(IBrewerRepository brewerRepository, IBeerRepository beerRepository)
         {
             _brewerRepository = brewerRepository;
@@ -29,12 +19,12 @@ namespace Brasserie.Service.Beers.Services
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
-            if (command == null)  throw new Exception("Null"); ;
+            if (command == null)  throw new Exception("Command can't be null"); ;
             if (command.Name == null) throw new Exception("Name of beer does not exist");
             if (command.Price <= 0) throw new Exception("Beer can't be free, Add a good amount");
            
-            var brewer  = _brewerRepository.FindById(command.BrewerId);
-            if(brewer == null) throw new Exception("Brewer does not exist");
+            var brewer = _brewerRepository.FindById(command.BrewerId);
+            if (brewer == null) throw new Exception("Brewer does not exist");
             
             var beer = new Beer
             {
@@ -48,20 +38,19 @@ namespace Brasserie.Service.Beers.Services
             return beer;
         }
 
-        public void Delete(int Id)
+        public void Delete(int id)
         {
-            _beerRepository.Delete(Id);
+            _beerRepository.Delete(id);
         }
 
-        public Beer FindById(int Id)
+        public Beer FindById(int id)
         {
-            return _beerRepository.FindById(Id);
+            return _beerRepository.FindById(id);
         }
 
         public IEnumerable<Beer> GetAll()
         {
             var beers = _beerRepository.GetAll();
-            if (beers == null) throw new Exception("List of beers is null");
             return beers;
         }
     }

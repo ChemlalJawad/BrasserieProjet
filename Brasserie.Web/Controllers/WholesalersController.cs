@@ -24,14 +24,14 @@ namespace Brasserie.Web.Controllers
         [Route("wholesalers")]
         public ActionResult<WholesalerBeer> SellNewBeer(SellBeerCommand command)
         {
-            _wholesalerService.SellNewBeer(command);
+            _wholesalerService.AddNewBeerToWholesaler(command);
 
             return Ok();
         }
 
         [HttpPost]
         [Route("wholesalers/{stock}")]
-        public ActionResult<WholesalerBeer> UpdateStock(UpdateStockCommand command, [FromRoute] int stock)
+        public ActionResult<WholesalerBeer> UpdateStock(UpdateWholesalerCommand command, [FromRoute] int stock)
         {
             command.Stock = stock;
             _wholesalerService.UpdateStock(command);

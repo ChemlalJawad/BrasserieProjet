@@ -5,8 +5,7 @@ namespace Brasserie.Data.Repositories.Interfaces
 {
     public interface IBrewerRepository
     {
-        IEnumerable<Brewer> GetAllBeers();
-     
-        Brewer FindById(int Id);
+        IEnumerable<Brewer> GetAllBeers();     
+        Brewer FindById(int id);
     }
 }

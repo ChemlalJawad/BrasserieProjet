@@ -7,10 +7,6 @@ namespace Brasserie.Data
     public class BrasserieContext : DbContext
     {
         public BrasserieContext(DbContextOptions<BrasserieContext> options) : base(options) { }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

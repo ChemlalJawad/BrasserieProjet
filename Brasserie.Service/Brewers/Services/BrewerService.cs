@@ -14,9 +14,9 @@ namespace Brasserie.Service.Brewers.Services
             _brewerRepository = brewerRepository;          
         }
 
-        public Brewer FindBrewerById(int Id)
+        public Brewer FindBrewerById(int id)
         {
-            var brewer = _brewerRepository.FindById(Id);
+            var brewer = _brewerRepository.FindById(id);
             return brewer;
         }
 
