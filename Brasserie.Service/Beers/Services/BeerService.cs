@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Brasserie.Core.Domains;
+﻿using Brasserie.Core.Domains;
 using Brasserie.Data;
 using Brasserie.Data.Exceptions;
 using Brasserie.Service.Beers.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Brasserie.Service.Beers.Services
 {

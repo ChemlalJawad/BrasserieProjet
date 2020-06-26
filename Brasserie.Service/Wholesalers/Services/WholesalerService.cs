@@ -1,8 +1,6 @@
 ﻿using Brasserie.Core.Domains;
 using Brasserie.Data;
 using Brasserie.Data.Exceptions;
-using Brasserie.Data.Repositories.Interfaces;
-using Brasserie.Service.Beers.Services;
 using Brasserie.Service.Wholesalers.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;

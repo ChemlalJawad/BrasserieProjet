@@ -1,17 +1,12 @@
 using Brasserie.Core.Domains;
 using Brasserie.Data;
+using Brasserie.Data.Exceptions;
 using Brasserie.Service.Beers;
 using Brasserie.Service.Beers.Services;
-using Microsoft.EntityFrameworkCore;
-using Moq;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
-using Assert = NUnit.Framework.Assert;
-using Brasserie.Service.Brewers.Services;
-using Brasserie.Data.Exceptions;
 
 namespace UnitTesting
 {
