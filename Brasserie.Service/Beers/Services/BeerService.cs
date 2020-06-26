@@ -1,4 +1,5 @@
 ﻿using Brasserie.Core.Domains;
+using Brasserie.Core.Enums;
 using Brasserie.Data;
 using Brasserie.Data.Exceptions;
 using Brasserie.Service.Beers.Services.Interfaces;
@@ -19,12 +20,12 @@ namespace Brasserie.Service.Beers.Services
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
-            if (command == null)  throw new HttpBodyException("Command can't be null"); 
-            if (command.Name == null) throw new HttpBodyException("Name of beer does not exist");
-            if (command.Price <= 0) throw new HttpBodyException("Beer can't be free, Add a good amount");
+            if (command == null)  throw new HttpBodyException(ExceptionMessage.COMMAND_IS_NULL); 
+            if (command.Name == null) throw new HttpBodyException(ExceptionMessage.NAME_BEER_NOT_EXIST);
+            if (command.Price <= 0) throw new HttpBodyException(ExceptionMessage.PRICE_NULL_OR_NEGATIVE);
            
             var brewer = _brasserieContext.Brewers.SingleOrDefault(b => b.Id == command.BrewerId);
-            if (brewer == null) throw new NotFindObjectException("Brewer does not exist");
+            if (brewer == null) throw new NotFindObjectException(ExceptionMessage.BREWER_NOT_EXIST);
             
             var beer = new Beer
             {
@@ -43,7 +44,7 @@ namespace Brasserie.Service.Beers.Services
         public void Delete(int id)
         {
             var beer = FindById(id);
-            if (beer == null) throw new NotFindObjectException("Beer does not exist");
+            if (beer == null) throw new NotFindObjectException(ExceptionMessage.BEER_NOT_EXIST);
 
             _brasserieContext.Beers.Remove(new Beer() { Id = id });
             _brasserieContext.SaveChanges();

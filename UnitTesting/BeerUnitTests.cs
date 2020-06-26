@@ -1,4 +1,5 @@
 using Brasserie.Core.Domains;
+using Brasserie.Core.Enums;
 using Brasserie.Data;
 using Brasserie.Data.Exceptions;
 using Brasserie.Service.Beers;
@@ -27,7 +28,7 @@ namespace UnitTesting
                 var service = new BeerService(context);
 
                 Action action = () => service.CreateBeer(null);
-                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Command can't be null");
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.COMMAND_IS_NULL);
             }
 
         }
@@ -46,7 +47,7 @@ namespace UnitTesting
                 };
 
                 Action action = () => service.CreateBeer(createBeer);
-                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Name of beer does not exist");
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.NAME_BEER_NOT_EXIST);
             }
           
         }
@@ -66,7 +67,7 @@ namespace UnitTesting
                 };
 
                 Action action = () => service.CreateBeer(createBeer);
-                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Beer can't be free, Add a good amount");
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.PRICE_NULL_OR_NEGATIVE);
             }
         }
 
@@ -84,7 +85,7 @@ namespace UnitTesting
                     BrewerId = new Brewer() { Id = 4 }.Id
                 };
                 Action action = () => service.CreateBeer(createBeer);
-                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Beer can't be free, Add a good amount");
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.PRICE_NULL_OR_NEGATIVE);
 
             }
         }
@@ -105,7 +106,7 @@ namespace UnitTesting
                 };
               
                 Action action = () => service.CreateBeer(createBeer);
-                action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Brewer does not exist");
+                action.Should().ThrowExactly<NotFindObjectException>().WithMessage(ExceptionMessage.BREWER_NOT_EXIST);
             }
         }
              

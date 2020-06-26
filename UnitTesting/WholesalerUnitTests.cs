@@ -1,4 +1,5 @@
-﻿using Brasserie.Data;
+﻿using Brasserie.Core.Enums;
+using Brasserie.Data;
 using Brasserie.Data.Exceptions;
 using Brasserie.Service.Wholesalers;
 using Brasserie.Service.Wholesalers.Services;
@@ -28,11 +29,10 @@ namespace UnitTesting
                 var wholesalerService = new WholesalerService(context);
 
                 Action action = () => wholesalerService.AddNewBeerToWholesaler(null);
-                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Command can't be null");
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.COMMAND_IS_NULL);
             }
         }
        
-
         [Fact]
         public void AddBeer_BeerNotExist_ThrowException()
         {
@@ -42,7 +42,7 @@ namespace UnitTesting
                 var wholesalerService = new WholesalerService(context);
 
                 Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
-                action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Beer does not exist");
+                action.Should().ThrowExactly<NotFindObjectException>().WithMessage(ExceptionMessage.BEER_NOT_EXIST);
             }
         }
        
@@ -55,7 +55,7 @@ namespace UnitTesting
                 var wholesalerService = new WholesalerService(context);
 
                 Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
-                action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Wholesaler does not exist");
+                action.Should().ThrowExactly<NotFindObjectException>().WithMessage(ExceptionMessage.WHOLESALER_NOT_EXIST);
             }
             
        }
@@ -69,7 +69,7 @@ namespace UnitTesting
                 var wholesalerService = new WholesalerService(context);
 
                 Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
-                action.Should().ThrowExactly<HttpBodyException>().WithMessage("You can't add a negative stock");
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.NEGATIVE_STOCK);
           }
       }
     
@@ -82,12 +82,12 @@ namespace UnitTesting
               var wholesalerService = new WholesalerService(context);
 
               Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
-              action.Should().ThrowExactly<DuplicateItemException>().WithMessage("Wholesaler already sell this beer");
+              action.Should().ThrowExactly<DuplicateItemException>().WithMessage(ExceptionMessage.ALREADY_SELL);
           }
       }    
 
       [Fact]
-      public void AddBeer_OK()
+      public void AddBeerToWholesaler_OK()
       {
           SellBeerCommand command = new SellBeerCommand() { BeerId = 5, WholesalerId = 2, Stock = 1000 };
           using (var context = new BrasserieContext(ContextOptions))
@@ -112,7 +112,7 @@ namespace UnitTesting
               var wholesalerService = new WholesalerService(context);
                 
               Action action = () => wholesalerService.UpdateWholesalerBeer(command);
-              action.Should().ThrowExactly<HttpBodyException>().WithMessage("You can't add a negative stock");
+              action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.NEGATIVE_STOCK);
           }
       }
 
@@ -143,7 +143,7 @@ namespace UnitTesting
               var wholesalerService = new WholesalerService(context);
 
               Action action = () => wholesalerService.GetQuotation(command);
-              action.Should().ThrowExactly<HttpBodyException>().WithMessage("Command can't be null !");
+              action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.COMMAND_IS_NULL);
           }            
       }
 
@@ -166,7 +166,7 @@ namespace UnitTesting
               var wholesalerService = new WholesalerService(context);
                 
               Action action = () => wholesalerService.GetQuotation(command);
-              action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Wholesaler does not exist!");
+              action.Should().ThrowExactly<NotFindObjectException>().WithMessage(ExceptionMessage.WHOLESALER_NOT_EXIST);
           }           
       }
 
@@ -188,7 +188,7 @@ namespace UnitTesting
               var wholesalerService = new WholesalerService(context);
 
               Action action = () => wholesalerService.GetQuotation(command);
-              action.Should().ThrowExactly<DuplicateItemException>().WithMessage("You can't have duplicates items in your Order");
+              action.Should().ThrowExactly<DuplicateItemException>().WithMessage(ExceptionMessage.DUPLICATE_ITEM);
           }
       }
 
@@ -209,7 +209,7 @@ namespace UnitTesting
               var wholesalerService = new WholesalerService(context);
 
               Action action = () => wholesalerService.GetQuotation(command);
-              action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Beer is not sell");
+              action.Should().ThrowExactly<NotFindObjectException>().WithMessage(ExceptionMessage.BEER_NOT_SELL);
           }
       }
 
@@ -234,7 +234,7 @@ namespace UnitTesting
               var wholesalerService = new WholesalerService(context);
 
               Action action = () => wholesalerService.GetQuotation(command);
-              action.Should().ThrowExactly<NotEnoughQuantityException>().WithMessage("You don't have enough stocks!");
+              action.Should().ThrowExactly<NotEnoughQuantityException>().WithMessage(ExceptionMessage.ENOUGH_STOCK);
           }
       }
 
