@@ -1,6 +1,4 @@
 using Brasserie.Data;
-using Brasserie.Data.Repositories;
-using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Beers.Services;
 using Brasserie.Service.Beers.Services.Interfaces;
 using Brasserie.Service.Brewers.Services;
