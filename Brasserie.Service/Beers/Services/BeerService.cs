@@ -1,30 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Brasserie.Core.Domains;
-using Brasserie.Data.Repositories.Interfaces;
+using Brasserie.Data;
+using Brasserie.Data.Exceptions;
 using Brasserie.Service.Beers.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Brasserie.Service.Beers.Services
 {
     public class BeerService : IBeerService
     {
-        private readonly IBeerRepository _beerRepository;
-        private readonly IBrewerRepository _brewerRepository;
+        private readonly BrasserieContext _brasserieContext;
 
-        public BeerService(IBrewerRepository brewerRepository, IBeerRepository beerRepository)
+        public BeerService(BrasserieContext brasserieContext)
         {
-            _brewerRepository = brewerRepository;
-            _beerRepository = beerRepository;
+            _brasserieContext = brasserieContext;
         }
 
         public Beer CreateBeer(CreateBeerCommand command)
         {
-            if (command == null)  throw new Exception("Command can't be null"); ;
-            if (command.Name == null) throw new Exception("Name of beer does not exist");
-            if (command.Price <= 0) throw new Exception("Beer can't be free, Add a good amount");
+            if (command == null)  throw new HttpBodyException("Command can't be null"); 
+            if (command.Name == null) throw new HttpBodyException("Name of beer does not exist");
+            if (command.Price <= 0) throw new HttpBodyException("Beer can't be free, Add a good amount");
            
-            var brewer = _brewerRepository.FindById(command.BrewerId);
-            if (brewer == null) throw new Exception("Brewer does not exist");
+            var brewer = _brasserieContext.Brewers.SingleOrDefault(b => b.Id == command.BrewerId);
+            if (brewer == null) throw new NotFindObjectException("Brewer does not exist");
             
             var beer = new Beer
             {
@@ -33,24 +33,38 @@ namespace Brasserie.Service.Beers.Services
                 Price = command.Price,
                 Brewer = brewer
             };
-           
-            _beerRepository.Create(beer);
+
+            _brasserieContext.Beers.Add(beer);
+            _brasserieContext.SaveChanges();
+
             return beer;
         }
 
         public void Delete(int id)
         {
-            _beerRepository.Delete(id);
+            var beer = FindById(id);
+            if (beer == null) throw new NotFindObjectException("Beer does not exist");
+
+            _brasserieContext.Beers.Remove(new Beer() { Id = id });
+            _brasserieContext.SaveChanges();
         }
 
         public Beer FindById(int id)
         {
-            return _beerRepository.FindById(id);
+           return _brasserieContext.Beers
+                .Include(b => b.Brewer)
+                .FirstOrDefault(e => e.Id == id);
         }
 
         public IEnumerable<Beer> GetAll()
         {
-            var beers = _beerRepository.GetAll();
+            var beers = _brasserieContext
+                 .Beers
+                 .Include(e => e.Brewer)
+                 .ThenInclude(e => e.Beers)
+                 .ThenInclude(e => e.WholesalerBeers)
+                 .ToList();
+
             return beers;
         }
     }

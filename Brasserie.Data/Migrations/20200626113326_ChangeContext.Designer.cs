@@ -4,14 +4,16 @@ using Brasserie.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Brasserie.Data.Migrations
+namespace BP.Data.Migrations
 {
     [DbContext(typeof(BrasserieContext))]
-    partial class BrasserieContextModelSnapshot : ModelSnapshot
+    [Migration("20200626113326_ChangeContext")]
+    partial class ChangeContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

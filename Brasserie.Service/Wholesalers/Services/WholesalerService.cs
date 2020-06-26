@@ -1,6 +1,10 @@
 ﻿using Brasserie.Core.Domains;
+using Brasserie.Data;
+using Brasserie.Data.Exceptions;
 using Brasserie.Data.Repositories.Interfaces;
+using Brasserie.Service.Beers.Services;
 using Brasserie.Service.Wholesalers.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,45 +13,44 @@ namespace Brasserie.Service.Wholesalers.Services
 {
     public class WholesalerService : IWholesalerService
     {
-        private readonly IWholesalerRepository _wholesalerRepository;
-        private readonly IBeerRepository _beerRepository;
-        public WholesalerService(IWholesalerRepository wholesalerRepository,IBeerRepository beerRepository)
+        private readonly BrasserieContext _brasserieContext;
+
+        public WholesalerService(BrasserieContext brasserieContext)
         {
-            _wholesalerRepository = wholesalerRepository;
-            _beerRepository = beerRepository;
+            _brasserieContext = brasserieContext;
         }
 
         public double GetQuotation(QuotationCommand command)
         {
-            if (command.Items == null) throw new Exception("Command can't be null !");
+            if (command.Items == null) throw new HttpBodyException("Command can't be null !");
                         
-            var wholesaler = _wholesalerRepository.FindById(command.WholesalerId);
-            if (wholesaler == null) throw new Exception("Wholesaler does not exist!");
+            var wholesaler = _brasserieContext.Wholesalers
+                 .Include(e => e.WholesalerBeers)
+                 .ThenInclude(e => e.Beer)
+                 .SingleOrDefault(e => e.Id == command.WholesalerId);
+            if (wholesaler == null) throw new NotFindObjectException("Wholesaler does not exist!");
 
             if (command.Items
                     .GroupBy(e => e.BeerId)
                     .ToList()
                     .Count()  < command.Items.Count())
-            throw new Exception("You can't have duplicates items in your Order");
+            throw new DuplicateItemException("You can't have duplicates items in your Order");
 
             var totalPrice = 0.00;
 
             foreach (var item in command.Items) {
-                var beer = _beerRepository.FindById(item.BeerId);
-                if (beer == null) throw new Exception("Beer does not exist");
                 
-                var stock = beer.WholesalerBeers
-                        .Where(wb => wb.WholesalerId == command.WholesalerId && wb.BeerId == item.BeerId)
-                        .SingleOrDefault()
-                        .Stock;
+                var wb = wholesaler.WholesalerBeers
+                        .SingleOrDefault(wb => wb.BeerId == item.BeerId);
+                if (wb == null) throw new NotFindObjectException("Beer is not sell");        
 
-                if (stock >= item.Quantity) 
+                if (wb.Stock >= item.Quantity) 
                 {
-                    totalPrice += beer.Price * item.Quantity;
+                    totalPrice += wb.Beer.Price * item.Quantity;
                 }
                 else
                 {
-                    throw new Exception("You don't have enough stocks!");
+                    throw new NotEnoughQuantityException("You don't have enough stocks!");
                 }      
             }
 
@@ -67,60 +70,61 @@ namespace Brasserie.Service.Wholesalers.Services
                 totalPrice -= discountPrice20;
             }
 
-            return totalPrice;
+            return Math.Round(totalPrice,2);
         }
 
-        public void AddNewBeerToWholesaler(SellBeerCommand command)
+        public WholesalerBeer AddNewBeerToWholesaler(SellBeerCommand command)
         {
-            if (command == null) throw new Exception("Command can't be null");
-            if (command.Stock < 0) throw new Exception("You can't add a negative stock");
+            if (command == null) throw new HttpBodyException("Command can't be null");
+            if (command.Stock < 0) throw new HttpBodyException("You can't add a negative stock");
            
-            var beer = _beerRepository.FindById(command.BeerId);
-            if (beer == null) throw new Exception("Beer does not exist");
+            var beer = _brasserieContext.Beers
+                .FirstOrDefault(e => e.Id == command.BeerId);
+            if (beer == null) throw new NotFindObjectException("Beer does not exist");
             
-            var wholesaler = _wholesalerRepository.FindById(command.WholesalerId);
-            if (wholesaler == null) throw new Exception("Wholesaler does not exist");
+            var wholesaler = _brasserieContext.Wholesalers
+                .Include(e => e.WholesalerBeers)
+                .FirstOrDefault(w => w.Id == command.WholesalerId);
+            if (wholesaler == null) throw new NotFindObjectException("Wholesaler does not exist");
 
-            foreach (var item in wholesaler.WholesalerBeers.ToList())
-            {
-                if (item.WholesalerId == command.WholesalerId && item.BeerId == command.BeerId) 
-                {
-                     throw new Exception("Wholesaler already sell this beer");                  
-                }
-            }
+           if (wholesaler.WholesalerBeers.Any(wb =>wb.WholesalerId == command.WholesalerId && wb.BeerId == command.BeerId))
+           {
+                throw new DuplicateItemException("Wholesaler already sell this beer");                  
+           }
+           
             var addBeer = new WholesalerBeer()
             {
                 BeerId = command.BeerId,
                 WholesalerId = command.WholesalerId,
                 Stock = command.Stock
             };
-            _wholesalerRepository.Add(addBeer);          
+            _brasserieContext.WholesalerBeers.Add(addBeer);
+            _brasserieContext.SaveChanges();
+
+            return addBeer;
         }
 
         public WholesalerBeer UpdateWholesalerBeer(UpdateStockCommand command)
         {
-            if (command == null) throw new Exception("Command can't be null");
+            if (command == null) throw new HttpBodyException("Command can't be null");
 
-            var beer = _beerRepository.FindById(command.BeerId);
-            if (beer == null) throw new Exception("Beer does not exist");
+            var wholesalerBeer = _brasserieContext.WholesalerBeers
+                .Find(command.BeerId, command.WholesalerId);
+            
+            if (command.Stock < 0) throw new HttpBodyException("You can't add a negative stock");
 
-            var wholesaler = _wholesalerRepository.FindById(command.WholesalerId);
-            if (wholesaler == null) throw new Exception("Wholesaler does not exist");
-
-            if (command.Stock < 0) throw new Exception("You can't add a negative stock");
-            var updateStock = new WholesalerBeer()
-            {
-                BeerId = command.BeerId,
-                WholesalerId = command.WholesalerId,
-                Stock = command.Stock
-            };
-            _wholesalerRepository.Update(updateStock);
-            return updateStock; 
+            wholesalerBeer.Stock = command.Stock;
+            _brasserieContext.WholesalerBeers.Update(wholesalerBeer);
+            
+            return wholesalerBeer; 
         }
         public List<WholesalerBeer> GetAll() 
         {
-            var wholesalerbeers = _wholesalerRepository.GetAll();
-            return wholesalerbeers;
+            return _brasserieContext.WholesalerBeers
+                 .Include(e => e.Wholesaler)
+                 .ThenInclude(e => e.WholesalerBeers)
+                 .ThenInclude(e => e.Beer)
+                 .ToList(); 
         }   
     }
 }

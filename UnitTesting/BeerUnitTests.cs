@@ -1,175 +1,140 @@
 using Brasserie.Core.Domains;
-using Brasserie.Data.Repositories.Interfaces;
+using Brasserie.Data;
 using Brasserie.Service.Beers;
 using Brasserie.Service.Beers.Services;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using Assert = NUnit.Framework.Assert;
+using Brasserie.Service.Brewers.Services;
+using Brasserie.Data.Exceptions;
 
 namespace UnitTesting
 {
-    public class BeerUnitTests
+    public class BeerUnitTests : ServiceContext
     {
-
-        private Mock<IBrewerRepository> brewerRepositoryMock;
-        private Mock<IBeerRepository> beerRepositoryMock;
-        private BeerService beerService;
+        public BeerUnitTests() : base(
+            new DbContextOptionsBuilder<BrasserieContext>()
+                .UseInMemoryDatabase("Test")
+                .Options)
+        {
+        }
 
         [Fact]
         public void AddBeer_CommandIsNull_ThrowException()
         {
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            brewerRepositoryMock = new Mock<IBrewerRepository>();
-            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
+            using(var context = new BrasserieContext(ContextOptions))
+            {
+                var service = new BeerService(context);
 
-            CreateBeerCommand createBeerCmd = null;
-            try
-            {
-                Beer actual = beerService.CreateBeer(createBeerCmd);
+                Action action = () => service.CreateBeer(null);
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Command can't be null");
             }
-            catch (Exception e)
-            {
-                Assert.AreEqual("Command can't be null", e.Message);
-            }
+
         }
-
+        
         [Fact]
         public void AddBeer_CommandNameIsNull_ThrowException()
         {
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            brewerRepositoryMock = new Mock<IBrewerRepository>();
-            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
-
-            CreateBeerCommand createBeerCmd = new CreateBeerCommand() { AlcoholPercentage = 10, Price = 15, BrewerId = 1 };
-            try
+            using (var context = new BrasserieContext(ContextOptions))
             {
-                Beer actual = beerService.CreateBeer(createBeerCmd);
-            }
-            catch (Exception e)
-            {
-                Assert.AreEqual("Name of beer does not exist", e.Message);
-            }
-        }
-
-        [Fact]
-        public void AddBeer_CommandAmountIsNull_ThrowException()
-        {
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            brewerRepositoryMock = new Mock<IBrewerRepository>();
-            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
-
-            CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaj", AlcoholPercentage = 10, Price = -15.00, BrewerId = 1 };
-            try
-            {
-                Beer actual = beerService.CreateBeer(createBeerCmd);
-            }
-            catch (Exception e)
-            {
-                Assert.AreEqual("Beer can't be free, Add a good amount", e.Message);
-            }
-        }
-
-        [Fact]
-        public void AddBeer_CommandBrewerIsNull_ThrowException()
-        {
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            brewerRepositoryMock = new Mock<IBrewerRepository>();
-            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
-
-            List<Brewer> brewers = new List<Brewer>() {
-                 new Brewer() { Id = 1, Name = "Le chef" },
-                 new Brewer() { Id = 2, Name = "Jade" }
-            };
-            List<Beer> beers = new List<Beer>()
-            {
-                new Beer()
-                { Id = 1,
-                    Name = "Ma binouze",
+                var service = new BeerService(context);
+                CreateBeerCommand createBeer = new CreateBeerCommand()
+                {
                     Price = 10,
-                    AlcoholPercentage = 7,
-                    Brewer = brewers[0],
-                    WholesalerBeers = new List<WholesalerBeer>()
-                    {
-                        new WholesalerBeer(){ BeerId = 1 ,WholesalerId = 1, Stock = 30 }
-                    }
-                },
-                new Beer()
-                { Id = 2,
-                    Name = "Ma Chouffe",
-                    Price = 17,
                     AlcoholPercentage = 10,
-                    Brewer = brewers[1],
-                    WholesalerBeers = new List<WholesalerBeer>()
-                    {
-                        new WholesalerBeer(){ BeerId = 2 ,WholesalerId = 1, Stock = 30 }
-                    }
-                }
-            };
+                    BrewerId = new Brewer() { Id = 1 }.Id
+                };
 
-            beerRepositoryMock.Setup(e => e.GetAll()).Returns(beers);
-            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns(brewers[0]);
-
-            CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaj", AlcoholPercentage = 10, Price = 15, BrewerId = 4 };
-            try
-            {
-                Beer actual = beerService.CreateBeer(createBeerCmd);
+                Action action = () => service.CreateBeer(createBeer);
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Name of beer does not exist");
             }
-            catch (Exception e)
+          
+        }
+
+        [Fact]
+        public void AddBeer_CommandAmountEqualZero_ThrowException()
+        {
+            using (var context = new BrasserieContext(ContextOptions))
             {
-                Assert.AreEqual("Brewer does not exist", e.Message);
+                var service = new BeerService(context);
+                CreateBeerCommand createBeer = new CreateBeerCommand()
+                {
+                    Name = "Jaja",
+                    Price = 0.00,
+                    AlcoholPercentage = 17.00,
+                    BrewerId = new Brewer() { Id = 4 }.Id
+                };
+
+                Action action = () => service.CreateBeer(createBeer);
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Beer can't be free, Add a good amount");
             }
         }
 
+        [Fact]
+        public void AddBeer_CommandAmountIsNegative_ThrowException()
+        {
+            using (var context = new BrasserieContext(ContextOptions))
+            {
+                var service = new BeerService(context);
+                CreateBeerCommand createBeer = new CreateBeerCommand()
+                {
+                    Name = "Jaja",
+                    Price = -10.00,
+                    AlcoholPercentage = 17.00,
+                    BrewerId = new Brewer() { Id = 4 }.Id
+                };
+                Action action = () => service.CreateBeer(createBeer);
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Beer can't be free, Add a good amount");
+
+            }
+        }
+             
+        [Fact]
+        public void AddBeer_BrewerNotExist_ThrowException()
+        {
+            using (var context = new BrasserieContext(ContextOptions))
+            {
+                var service = new BeerService(context);
+                CreateBeerCommand createBeer = new CreateBeerCommand()
+                {
+                    Name = "Xavier",
+                    Price = 10.00,
+                    AlcoholPercentage = 1.00,
+                    BrewerId = 40
+                    
+                };
+              
+                Action action = () => service.CreateBeer(createBeer);
+                action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Brewer does not exist");
+            }
+        }
+             
         [Fact]
         public void AddBeer_Ok()
         {
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            brewerRepositoryMock = new Mock<IBrewerRepository>();
-            beerService = new BeerService(brewerRepositoryMock.Object, beerRepositoryMock.Object);
-
-
-            List<Brewer> brewers = new List<Brewer>() {
-                 new Brewer() { Id = 1, Name = "Le chef" },
-                 new Brewer() { Id = 2, Name = "Jade" }
-            };
-            List<Beer> beers = new List<Beer>()
+            using (var context = new BrasserieContext(ContextOptions))
             {
-                new Beer()
-                { Id = 1,
-                    Name = "Ma binouze",
-                    Price = 10,
-                    AlcoholPercentage = 7,
-                    Brewer = brewers[0],
-                    WholesalerBeers = new List<WholesalerBeer>()
-                    {
-                        new WholesalerBeer(){ BeerId = 1 ,WholesalerId = 1, Stock = 30 }
-                    }
-                },
-                new Beer()
-                { Id = 2,
-                    Name = "Ma Chouffe",
-                    Price = 17,
-                    AlcoholPercentage = 10,
-                    Brewer = brewers[1],
-                    WholesalerBeers = new List<WholesalerBeer>()
-                    {
-                        new WholesalerBeer(){ BeerId = 2 ,WholesalerId = 1, Stock = 30 }
-                    }
-                }
-            };
-            Beer expect = new Beer() { Name = "Jaja", AlcoholPercentage = 10, Price = 15, Brewer = brewers[0] };
-            beerRepositoryMock.Setup(e => e.GetAll()).Returns(beers);
-            brewerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((brewers[0]));
-            CreateBeerCommand createBeerCmd = new CreateBeerCommand() { Name = "Jaja", AlcoholPercentage = 10, Price = 15, BrewerId = 1 };
-            Beer actual = beerService.CreateBeer(createBeerCmd);
+                var service = new BeerService(context);
+                CreateBeerCommand createBeer = new CreateBeerCommand()
+                {
+                    Name = "Xavier",
+                    Price = 10.00,
+                    AlcoholPercentage = 1.00,
+                    BrewerId = 1
+                    
+                };
 
-            Assert.AreEqual(expect.Name, actual.Name);
-            Assert.AreEqual(expect.Price, actual.Price);
-            Assert.AreEqual(expect.Brewer, actual.Brewer);
+                var beer = service.CreateBeer(createBeer);
+
+                beer.Name.Should().Be("Xavier");
+                beer.Price.Should().Be(10);
+                beer.Brewer.Name.Should().Be("Abbaye de Leffe");
+            }
         }
     }
 }

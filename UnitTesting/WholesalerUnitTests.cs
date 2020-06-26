@@ -1,420 +1,324 @@
 ﻿using Brasserie.Core.Domains;
+using Brasserie.Data;
+using Brasserie.Data.Exceptions;
 using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Wholesalers;
 using Brasserie.Service.Wholesalers.Services;
 using Brasserie.Service.Wholesalers.Services.Interfaces;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Assert = Xunit.Assert;
 
 namespace UnitTesting
 {
-    public class WholesalerUnitTests
+    public class WholesalerUnitTests : ServiceContext
     {
-        private Mock<IWholesalerRepository> wholesalerRepositoryMock;
-        private Mock<IBeerRepository> beerRepositoryMock;
-        private WholesalerService wholesalerService;
+        public WholesalerUnitTests() : base(
+           new DbContextOptionsBuilder<BrasserieContext>()
+               .UseInMemoryDatabase("Test")
+               .Options)
+        {
+        }
 
         [Fact]
         public void AddBeer_CommandIsNull_ThrowException()
         {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
+           using (var context = new BrasserieContext(ContextOptions))
+            { 
+                var wholesalerService = new WholesalerService(context);
 
-            SellBeerCommand sellBeerCommand = null;
-            try
-            {
-                wholesalerService.AddNewBeerToWholesaler(sellBeerCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Command can't be null", e.Message);
+                Action action = () => wholesalerService.AddNewBeerToWholesaler(null);
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage("Command can't be null");
             }
         }
+       
 
         [Fact]
         public void AddBeer_BeerNotExist_ThrowException()
         {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            LoadMockData();
+            SellBeerCommand command = new SellBeerCommand() { BeerId = 25, WholesalerId = 1, Stock = 12 };
+            using (var context = new BrasserieContext(ContextOptions))
+            {
+                var wholesalerService = new WholesalerService(context);
 
-            SellBeerCommand sellBeerCommand = new SellBeerCommand() { BeerId = 10 ,WholesalerId = 1, Stock = 10 };
-            try
-            {
-                wholesalerService.AddNewBeerToWholesaler(sellBeerCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Beer does not exist", e.Message);
+                Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
+                action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Beer does not exist");
             }
         }
-        [Fact]
-        public void AddBeer_WholesalerNotExist_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            LoadMockData();
-
-            SellBeerCommand sellBeerCommand = new SellBeerCommand() { BeerId = 1, WholesalerId = 10, Stock = 10 };
-            try
+       
+       [Fact]
+       public void AddBeer_WholesalerNotExist_ThrowException()
+       {
+            SellBeerCommand command = new SellBeerCommand() { BeerId = 2, WholesalerId = 7, Stock = 10 };
+            using (var context = new BrasserieContext(ContextOptions))
             {
-                wholesalerService.AddNewBeerToWholesaler(sellBeerCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Wholesaler does not exist", e.Message);
-            }
-        }
+                var wholesalerService = new WholesalerService(context);
 
-        [Fact]
-        public void SellBeer_StockIsNegative_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-
-            SellBeerCommand sellBeerCommand = new SellBeerCommand() { BeerId = 1, WholesalerId = 2, Stock = -10 };
-            try
-            {
-                wholesalerService.AddNewBeerToWholesaler(sellBeerCommand);
+                Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
+                action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Wholesaler does not exist");
             }
-
-            catch (Exception e)
-            {
-                Assert.Equal("You can't add a negative stock", e.Message);
-            }
-        }
-
-        [Fact]
-        public void AddBeer_DuplicateBeer_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);           
-            LoadMockData();
             
-            SellBeerCommand sellBeerCommand = new SellBeerCommand() { BeerId = 1, WholesalerId = 1, Stock = 10 };           
-                      
-            try
-            {
-                wholesalerService.AddNewBeerToWholesaler(sellBeerCommand);
+       }
+       
+      [Fact]
+      public void AddBeer_StockIsNegative_ThrowException()
+      {
+          SellBeerCommand command = new SellBeerCommand() { BeerId = 1, WholesalerId = 2, Stock = -10 };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+                var wholesalerService = new WholesalerService(context);
 
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Wholesaler already sell this beer", e.Message);
-            }
-        }
+                Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
+                action.Should().ThrowExactly<HttpBodyException>().WithMessage("You can't add a negative stock");
+          }
+      }
+    
+      [Fact]
+      public void AddBeer_DuplicateBeer_ThrowException()
+      {
+          SellBeerCommand command = new SellBeerCommand() { BeerId = 1, WholesalerId = 1, Stock = 10 };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
 
-        [Fact]
-        public void UpdateStock_StockIsNegative_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            LoadMockData();
-            UpdateStockCommand updateBeerCommand = new UpdateStockCommand() { BeerId = 1, WholesalerId = 1, Stock = -10 };
+              Action action = () => wholesalerService.AddNewBeerToWholesaler(command);
+              action.Should().ThrowExactly<DuplicateItemException>().WithMessage("Wholesaler already sell this beer");
+          }
+      }    
+
+      [Fact]
+      public void AddBeer_OK()
+      {
+          SellBeerCommand command = new SellBeerCommand() { BeerId = 5, WholesalerId = 2, Stock = 1000 };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+
+              var actual = wholesalerService.AddNewBeerToWholesaler(command);
+
+              actual.BeerId.Should().Be(command.BeerId);
+              actual.WholesalerId.Should().Be(command.WholesalerId);
+              actual.Stock.Should().Be(command.Stock);
             
-            try
-            {
-                wholesalerService.UpdateWholesalerBeer(updateBeerCommand);
-            }
+          }
+      }
 
-            catch (Exception e)
-            {
-                Assert.Equal("You can't add a negative stock", e.Message);
-            }
-        }
+      [Fact]
+      public void UpdateStock_StockIsNegative_ThrowException()
+      {
+          UpdateStockCommand command = new UpdateStockCommand() { BeerId = 1, WholesalerId = 1, Stock = -10 };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+                
+              Action action = () => wholesalerService.UpdateWholesalerBeer(command);
+              action.Should().ThrowExactly<HttpBodyException>().WithMessage("You can't add a negative stock");
+          }
+      }
 
-        [Fact]
-        public void UpdateStock_Stock_IsOk()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            LoadMockData();
-            
-            UpdateStockCommand updateBeerCommand = new UpdateStockCommand() { BeerId = 1, WholesalerId = 1, Stock = 9 }; 
-            var result = wholesalerService.UpdateWholesalerBeer(updateBeerCommand);
-            
-            Assert.Equal(updateBeerCommand.Stock, result.Stock);
-        }
+      [Fact]
+      public void UpdateStock_Stock_IsOk()
+      {
+          UpdateStockCommand command = new UpdateStockCommand() { BeerId = 1, WholesalerId = 1, Stock = 9 };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
 
-        [Fact]
-        public void GetQuotation_CommandItemIsNull_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
+              var actual = wholesalerService.UpdateWholesalerBeer(command);
+              actual.Stock.Should().Be(9);
+          }
+      }
+        
+      [Fact]
+      public void GetQuotation_CommandItemIsNull_ThrowException()
+      {
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 1,
+              TotalPrice = 100,
+              Items = null
+          };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
 
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 1,
-                TotalPrice = 100,
-                Items = null
-            };
+              Action action = () => wholesalerService.GetQuotation(command);
+              action.Should().ThrowExactly<HttpBodyException>().WithMessage("Command can't be null !");
+          }            
+      }
 
-            try
-            {
-                wholesalerService.GetQuotation(quotationCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Command can't be null !", e.Message);
-            }
-        }
-
-        [Fact]
-        public void GetQuotation_WholesalerNotExist_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 2,
-                TotalPrice = 100,
-                Items = new List<ItemCommand>
-                {
-                    new ItemCommand() { BeerId= 1, Quantity = 10},
-                    new ItemCommand() { BeerId= 2, Quantity = 5}
-                }
-            };
-
-            try
-            {
-                wholesalerService.GetQuotation(quotationCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Wholesaler does not exist!", e.Message);
-            }
-        }
-        [Fact]
-        public void GetQuotation_CheckDuplicateOrder_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            LoadMockData();
-
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 1,
-                TotalPrice = 100,
-                Items = new List<ItemCommand>
-                {
-                    new ItemCommand() { BeerId= 7, Quantity = 10},
-                    new ItemCommand() { BeerId= 7, Quantity = 10}
-                }
-            };
-
-            try
-            {
-                wholesalerService.GetQuotation(quotationCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("You can't have duplicates items in your Order", e.Message);
-            }
-        }
-
-        [Fact]
-        public void GetQuotation_BeerNotExist_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            LoadMockData();
-
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 1,
-                TotalPrice = 100,
-                Items = new List<ItemCommand>
-                {
-                    new ItemCommand() { BeerId= 7, Quantity = 10}
-                }
-            };
-
-            try
-            {
-                wholesalerService.GetQuotation(quotationCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Beer does not exist", e.Message);
-            }
-        }
-
-        [Fact]
-        public void GetQuotation_StockNotEnough_ThrowException()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            LoadMockData();
-
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 1,
-                TotalPrice = 100,
-                Items = new List<ItemCommand>
-                {
-                    new ItemCommand()
-                    {
-                        BeerId= 1,
-                        Quantity = 40
-                    }
-                }
-            };
-
-            try
-            {
-                wholesalerService.GetQuotation(quotationCommand);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("You don't have enough stocks!", e.Message);
-            }
-        }
-
-        [Fact]
-        public void GetQuotation_Discount10_IsOk()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            var expect = 180;
-            LoadMockData();
-
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 1,
-                Items = new List<ItemCommand>
-                {
-                    new ItemCommand()
-                    {
-                        BeerId= 1,
-                        Quantity = 20
-                    }
-                }
-            };
-
-            var actual = wholesalerService.GetQuotation(quotationCommand);
-            Assert.Equal(expect, actual);
-
-        }
-        [Fact]
-        public void GetQuotation_NoDiscount_IsOk()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            var expect = 90;
-            LoadMockData();
-
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 1,
-                Items = new List<ItemCommand>
-                {
-                    new ItemCommand()
-                    {
-                        BeerId= 1,
-                        Quantity = 9
-                    }
-                }
-            };
-
-            var actual = wholesalerService.GetQuotation(quotationCommand);
-            Assert.Equal(expect, actual);
-
-        }
-
-        [Fact]
-        public void GetQuotation_Discount20_IsOk()
-        {
-            wholesalerRepositoryMock = new Mock<IWholesalerRepository>();
-            beerRepositoryMock = new Mock<IBeerRepository>();
-            wholesalerService = new WholesalerService(wholesalerRepositoryMock.Object, beerRepositoryMock.Object);
-            var expect = 200;
-            LoadMockData();
-
-            QuotationCommand quotationCommand = new QuotationCommand()
-            {
-                WholesalerId = 1,
-                Items = new List<ItemCommand>
-                {
-                    new ItemCommand()
-                    {
-                        BeerId= 1,
-                        Quantity = 25
-                    }
-                }
-            };
-
-            var actual = wholesalerService.GetQuotation(quotationCommand);
-            Assert.Equal(expect, actual);
-
-        }
-
-        internal void LoadMockData()
-        {
-            List<Wholesaler> wholesalers = new List<Wholesaler>()
-            {
-              new Wholesaler()
-              {  
-                Id = 1,
-                Name = "Jaja",
-                WholesalerBeers = new List<WholesalerBeer>()
-                    {
-                        new WholesalerBeer(){ BeerId = 1 ,WholesalerId = 1, Stock = 30 },
-                        new WholesalerBeer(){ BeerId = 2 ,WholesalerId = 1, Stock = 30 },
-                    }
-
+      [Fact]
+      public void GetQuotation_WholesalerNotExist_ThrowException()
+      {
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 70,
+              TotalPrice = 100,
+              Items = new List<ItemCommand>
+              {
+                  new ItemCommand() { BeerId= 1, Quantity = 10},
+                  new ItemCommand() { BeerId= 2, Quantity = 5}
               }
-            };
+          };
 
-            List<Beer> beers = new List<Beer>()
-            {
-                new Beer()
-                {   
-                    Id = 1,
-                    Name = "Ma binouze",
-                    Price = 10,
-                    AlcoholPercentage = 7,
-                    WholesalerBeers = new List<WholesalerBeer>()
-                    {
-                        new WholesalerBeer(){ BeerId = 1 ,WholesalerId = 1, Stock = 30 }
-                    }
-                },
-                new Beer()
-                { 
-                    Id = 2,
-                    Name = "Ma Chouffe",
-                    Price = 17,
-                    AlcoholPercentage = 10,
-                    WholesalerBeers = new List<WholesalerBeer>()
-                    {
-                        new WholesalerBeer(){ BeerId = 2 ,WholesalerId = 1, Stock = 30 }
-                    }
-                }
-            };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+                
+              Action action = () => wholesalerService.GetQuotation(command);
+              action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Wholesaler does not exist!");
+          }           
+      }
 
-            beerRepositoryMock.Setup(e => e.GetAll()).Returns(beers);
-            wholesalerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => wholesalers.Where(ws => ws.Id == arg1).SingleOrDefault());
-            beerRepositoryMock.Setup(e => e.FindById(It.IsAny<int>())).Returns((int arg1) => beers.Where(b => b.Id == arg1).SingleOrDefault());
+      [Fact]
+      public void GetQuotation_CheckDuplicateOrder_ThrowException()
+      {
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 1,
+              TotalPrice = 100,
+              Items = new List<ItemCommand>
+              {
+                  new ItemCommand() { BeerId= 7, Quantity = 10},
+                  new ItemCommand() { BeerId= 7, Quantity = 3}
+              }
+          };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+
+              Action action = () => wholesalerService.GetQuotation(command);
+              action.Should().ThrowExactly<DuplicateItemException>().WithMessage("You can't have duplicates items in your Order");
+          }
+      }
+
+      [Fact]
+      public void GetQuotation_BeerNotExist_ThrowException()
+      {
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 1,
+              TotalPrice = 100,
+              Items = new List<ItemCommand>
+              {
+                  new ItemCommand() { BeerId= 7, Quantity = 10}
+              }
+          };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+
+              Action action = () => wholesalerService.GetQuotation(command);
+              action.Should().ThrowExactly<NotFindObjectException>().WithMessage("Beer is not sell");
+          }
+      }
+
+      [Fact]
+      public void GetQuotation_StockNotEnough_ThrowException()
+      {
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 1,
+              TotalPrice = 100,
+              Items = new List<ItemCommand>
+              {
+                  new ItemCommand()
+                  {
+                      BeerId= 1,
+                      Quantity = 40
+                  }
+              }
+          };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+
+              Action action = () => wholesalerService.GetQuotation(command);
+              action.Should().ThrowExactly<NotEnoughQuantityException>().WithMessage("You don't have enough stocks!");
+          }
+      }
+
+      [Fact]
+      public void GetQuotation_Discount10_IsOk()
+      {
+          var expect = 39.6;
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 1,
+              Items = new List<ItemCommand>
+              {
+                  new ItemCommand()
+                  {
+                      BeerId= 1,
+                      Quantity = 20
+                  }
+              }
+          };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+
+              var actual = wholesalerService.GetQuotation(command);
+              actual.Should().Be(expect);
+          }
+      }
+
+      [Fact]
+      public void GetQuotation_NoDiscount_IsOk()
+      {
+          var expect = 19.8; 
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 1,
+              Items = new List<ItemCommand>
+              {
+                  new ItemCommand()
+                  {
+                      BeerId= 1,
+                      Quantity = 9
+                  }
+              }
+          }; 
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+
+              var actual = wholesalerService.GetQuotation(command);
+              actual.Should().Be(expect);
+          }          
+      }
+
+      [Fact]
+      public void GetQuotation_Discount20_IsOk()
+      {         
+          var expect = 44.00;
+          QuotationCommand command = new QuotationCommand()
+          {
+              WholesalerId = 1,
+              Items = new List<ItemCommand>
+              {
+                  new ItemCommand()
+                  {
+                      BeerId= 1,
+                      Quantity = 25
+                  }
+              }
+          };
+          using (var context = new BrasserieContext(ContextOptions))
+          {
+              var wholesalerService = new WholesalerService(context);
+
+              var actual = wholesalerService.GetQuotation(command);
+              actual.Should().Be(expect);
+          }
         }
+
     }
 }

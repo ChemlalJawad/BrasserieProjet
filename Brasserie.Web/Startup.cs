@@ -38,11 +38,6 @@ namespace Brasserie.Web
                 options.UseSqlServer(@"Data Source=DESKTOP-5ARGQ5B\MSSQLSERVER01;Initial Catalog=localdb;Integrated Security=True");
             });
 
-
-            services.AddScoped<IBeerRepository, BeerRepository>();
-            services.AddScoped<IBrewerRepository, BrewerRepository>();
-            services.AddScoped<IWholesalerRepository, WholesalerRepository>();
-
             services.AddScoped<IBeerService, BeerService>();
             services.AddScoped<IBrewerService, BrewerService>();
             services.AddScoped<IWholesalerService, WholesalerService>();

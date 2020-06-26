@@ -1,29 +1,37 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Brasserie.Core.Domains;
+using Brasserie.Data;
 using Brasserie.Data.Repositories.Interfaces;
 using Brasserie.Service.Brewers.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Brasserie.Service.Brewers.Services
 {
     public class BrewerService : IBrewerService
     {
-        private readonly IBrewerRepository _brewerRepository;
+        private readonly BrasserieContext _brasserieContext;
 
-        public BrewerService(IBrewerRepository brewerRepository)
+        public BrewerService(BrasserieContext brasserieContext)
         {
-            _brewerRepository = brewerRepository;          
+            _brasserieContext = brasserieContext;
         }
 
         public Brewer FindBrewerById(int id)
-        {
-            var brewer = _brewerRepository.FindById(id);
-            return brewer;
+        {         
+            return _brasserieContext.Brewers
+                .Include(e => e.Beers)
+                .ThenInclude(e => e.WholesalerBeers)
+                .SingleOrDefault(e => e.Id == id);
         }
 
         public IEnumerable<Brewer> GetAllBeers()
         {
-            var brewers = _brewerRepository.GetAllBeers();
-            return brewers;
+            return _brasserieContext.Brewers
+                .Include(e => e.Beers)
+                .ThenInclude(e => e.WholesalerBeers)
+                .ThenInclude(e => e.Wholesaler)
+                .ToList(); 
         }
     }
 }
