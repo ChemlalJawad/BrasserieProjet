@@ -43,7 +43,7 @@ namespace UnitTesting
                 {
                     Price = 10,
                     AlcoholPercentage = 10,
-                    BrewerId = new Brewer() { Id = 1 }.Id
+                    BrewerId = 1
                 };
 
                 Action action = () => service.CreateBeer(createBeer);
@@ -63,7 +63,7 @@ namespace UnitTesting
                     Name = "Jaja",
                     Price = 0.00,
                     AlcoholPercentage = 17.00,
-                    BrewerId = new Brewer() { Id = 4 }.Id
+                    BrewerId = 4
                 };
 
                 Action action = () => service.CreateBeer(createBeer);
@@ -82,7 +82,7 @@ namespace UnitTesting
                     Name = "Jaja",
                     Price = -10.00,
                     AlcoholPercentage = 17.00,
-                    BrewerId = new Brewer() { Id = 4 }.Id
+                    BrewerId = 1
                 };
                 Action action = () => service.CreateBeer(createBeer);
                 action.Should().ThrowExactly<HttpBodyException>().WithMessage(ExceptionMessage.PRICE_NULL_OR_NEGATIVE);

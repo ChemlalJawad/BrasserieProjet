@@ -22,7 +22,6 @@ namespace UnitTesting
             {
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
-
             }
 
         }
